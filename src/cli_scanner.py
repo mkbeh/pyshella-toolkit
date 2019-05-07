@@ -3,7 +3,7 @@ import argparse
 import asyncio
 import uvloop
 
-from pyshella_scanner.scanner import scanner
+from src.pyshella_scanner.scanner import scanner
 
 
 cli_desc = 'Scanner which parse Bitcoin or forks peers and writes them into file.'
@@ -18,13 +18,14 @@ epilog = """
 
 
 def _run_scanner(**kwargs):
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     ioloop = asyncio.get_event_loop()
     ioloop.run_until_complete(scanner(kwargs))
 
 
 def cli():
-    parser = argparse.ArgumentParser(prog='pyshella_scanner', formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description=cli_desc, epilog=epilog)
+    parser = argparse.ArgumentParser(prog='pyshella_scanner', description=cli_desc, epilog=epilog,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-u', '--uri', nargs=1, required=True, metavar='', dest='uri', type=str, help=uri_help_text)
     parser.add_argument('-b', '--ban-time', nargs=1, metavar='', default=14 * 86400, type=int, help=ban_time_help_text)
     parser.add_argument('-i', '--interval', nargs=1, metavar='', default=60, type=int, help=interval_help_text)
@@ -34,5 +35,4 @@ def cli():
 
 
 if __name__ == '__main__':
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     cli()
