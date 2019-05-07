@@ -3,7 +3,7 @@ import aiofiles
 from functools import wraps
 
 
-def log(file):
+def write(file):
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
