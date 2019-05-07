@@ -1,4 +1,8 @@
 # pyshella-toolkit
+
+[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
+
 This is simple toolkit for Bitcoin or Bitcoin forks , which contains
 cli scripts such as `peers-scanner` and `coins-withdrawal`.
 
