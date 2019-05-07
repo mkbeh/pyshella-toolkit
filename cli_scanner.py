@@ -8,10 +8,9 @@ from pyshella_scanner.scanner import scanner
 
 cli_desc = 'Scanner which parse Bitcoin or forks peers and writes them into file.'
 uri_help_text = 'Node URI.'
-ban_time_help_text = 'The time which will be banned each peer.'
-interval_help_text = 'Interval between call cycles for new peers.'
+ban_time_help_text = 'The time(days) which will be banned each peer (by default 14 days).'
+interval_help_text = 'Interval(secs) between call cycles for new peers (by default 60 secs).'
 epilog = """
-
 |-----------------|
 |Created by @mkbeh|
 |-----------------|
