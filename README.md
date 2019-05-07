@@ -2,9 +2,17 @@
 This is simple toolkit for Bitcoin or Bitcoin forks , which contains
 cli scripts such as `peers-scanner` and `coins-withdrawal`.
 
+
 ## Peers Scanner
 The `peers scanner` scans the network for available peers and 
 writes them to a file. For new peers, old ones are blacklisted.
+
+### Installation
+```bash
+git clone https://github.com/mkbeh/pyshella-toolkit
+cd pyshella-toolkit/
+python3.6 setup.py install --user
+```
 
 ### How to use
 ```
