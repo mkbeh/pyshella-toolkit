@@ -25,7 +25,8 @@ async def _add_new_peers(uri, ban_time):
             if count < 2:
                 continue
 
-            ip, addr, subver = await _get_ip_from_addr(peer_info["addr"]), peer_info["addr"], peer_info["subver"]
+            ip = await _get_ip_from_addr(peer_info["addr"])
+            addr, subver = peer_info["addr"], peer_info["subver"]
             await gram.set_ban(ip, bantime=ban_time)
 
             yield f'{addr}:{subver}\n'
