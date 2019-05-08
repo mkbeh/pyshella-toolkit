@@ -36,5 +36,5 @@ optional arguments:
   -i , --interval   Interval(secs) between call cycles for new peers (by
                     default 60 secs).
                     
-Usage example: pyshella_scanner -u node_uri
+Usage example: pyshella_scanner -u <node_uri>
 ```
