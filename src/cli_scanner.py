@@ -11,6 +11,8 @@ uri_help_text = 'Node URI.'
 ban_time_help_text = 'The time(days) which will be banned each peer (by default 14 days).'
 interval_help_text = 'Interval(secs) between call cycles for new peers (by default 60 secs).'
 epilog = """
+Usage example: pyshella_scanner -u node_uri
+
 |-----------------|
 |Created by @mkbeh|
 |-----------------|
