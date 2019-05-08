@@ -16,6 +16,10 @@ writes them to a file. For new peers, old ones are blacklisted.
 git clone https://github.com/mkbeh/pyshella-toolkit
 cd pyshella-toolkit/
 python3.6 setup.py install --user
+
+# NOTE: if error - try previously 
+pip3.6 install wheel
+export PYTHONPATH=~/.local/lib/python3.6/site-packages/
 ```
 
 ### How to use

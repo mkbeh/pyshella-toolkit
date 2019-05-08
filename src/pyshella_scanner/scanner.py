@@ -32,7 +32,7 @@ async def _add_new_peers(uri, ban_time):
             yield f'{addr}:{subver}\n'
             added_peers_num += 1
 
-    logger.info(f'Successfully added {added_peers_num} peers.')
+    logger.info(f'Successfully added {added_peers_num} new peers.')
 
 
 async def scanner(args):
