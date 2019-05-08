@@ -32,7 +32,7 @@ def cli():
     parser.add_argument('-b', '--ban-time', nargs=1, metavar='', default=14 * 86400, type=int, help=ban_time_help_text)
     parser.add_argument('-i', '--interval', nargs=1, metavar='', default=60, type=int, help=interval_help_text)
 
-    args = parser.parse_args(['-h'])
+    args = parser.parse_args()
     _run_scanner(uri=args.uri[0], ban_time=args.ban_time, interval=args.interval)
 
 
