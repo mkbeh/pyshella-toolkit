@@ -20,7 +20,6 @@ Usage example: pyshella_scanner -u <node_uri>
 
 
 def _run_scanner(**kwargs):
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     ioloop = asyncio.get_event_loop()
     ioloop.run_until_complete(scanner(kwargs))
 
@@ -37,4 +36,5 @@ def cli():
 
 
 if __name__ == '__main__':
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     cli()
