@@ -3,7 +3,7 @@ import argparse
 import asyncio
 import uvloop
 
-from src.toolkit.scanner import scanner
+from src.toolkit.peersscanner import scanner
 
 
 cli_desc = 'Scanner which parse Bitcoin or forks peers and writes them into MongoDB.'
