@@ -33,8 +33,7 @@ def cli():
     parser.add_argument('-mU', '--mongo-uri', required=True, metavar=' ', type=str, help='MongoDB uri.')
     parser.add_argument('-n', '--coin-name', required=True, metavar=' ', type=str, help='Name of cryptocurrency.')
 
-    args = vars(parser.parse_args())
-    _run_scanner(**args)
+    _run_scanner(**vars(parser.parse_args()))
 
 
 if __name__ == '__main__':
