@@ -29,7 +29,7 @@ def _run_jsonrpc_searcher(**kwargs):
 def cli():
     parser = argparse.ArgumentParser(prog='pyshella_scanner', description=cli_desc, epilog=epilog,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-mU', '--mongo-uri', metavar=' ', type=str, default='', help='MongoDB URI.')
+    parser.add_argument('-mU', '--mongo-uri', metavar=' ', type=str, default=default_mongo_uri, help='MongoDB URI.')
     parser.add_argument('-n', '--coin-name', required=True, metavar=' ', type=str, help='Name of cryptocurrency.')
     parser.add_argument('-cT', metavar='SECS', type=float, default=.1, help='Timeout between block cycles.')
     parser.add_argument('-rT', metavar='SECS', type=float, default=.1, help=read_timeout_help)
