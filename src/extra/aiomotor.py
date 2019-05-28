@@ -9,9 +9,12 @@ logging.basicConfig(level=logging.INFO)
 
 
 class AIOMotor:
-    def __init__(self, db_name: str, uri: str):
+    def __init__(self, db_name: str, uri: str, loop=None):
         try:
-            cxn = motor_asyncio.AsyncIOMotorClient(uri)
+            if loop:
+                cxn = motor_asyncio.AsyncIOMotorClient(uri, io_loop=loop)
+            else:
+                cxn = motor_asyncio.AsyncIOMotorClient(uri)
         except errors.AutoReconnect:
             raise RuntimeError()
 

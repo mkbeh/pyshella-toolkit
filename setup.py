@@ -12,7 +12,9 @@ setup(
     install_requires=[
         'aiobitcoin',
         'uvloop',
-        'aiofiles'
+        'aiofiles',
+        'pymongo',
+        'motor',
     ],
     packages=find_packages(),
     entry_points={

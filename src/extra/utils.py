@@ -31,4 +31,8 @@ def get_file_path(dir_name, file_name):
 
     return os.path.join(
         work_dir, file_name
-)
+    )
+
+
+def range_to_nums(range_):
+    return [i for i in range(*range_)]
