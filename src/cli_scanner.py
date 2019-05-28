@@ -20,21 +20,22 @@ Usage example: pyshella_scanner -u <node_uri>
 
 
 def _run_scanner(**kwargs):
-    ioloop = asyncio.get_event_loop()
-    ioloop.run_until_complete(scanner(kwargs))
+    uvloop.install()
+    asyncio.run(scanner(kwargs))
 
 
 def cli():
     parser = argparse.ArgumentParser(prog='pyshella_scanner', description=cli_desc, epilog=epilog,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-u', '--uri', nargs=1, required=True, metavar='', dest='uri', type=str, help=uri_help_text)
-    parser.add_argument('-b', '--ban-time', nargs=1, metavar='', default=14 * 86400, type=int, help=ban_time_help_text)
-    parser.add_argument('-i', '--interval', nargs=1, metavar='', default=60, type=int, help=interval_help_text)
+    parser.add_argument('-nU', '--node-uri', required=True, metavar='', dest='uri', type=str, help=uri_help_text)
+    parser.add_argument('-b', '--ban-time', metavar='', default=14 * 86400, type=int, help=ban_time_help_text)
+    parser.add_argument('-i', '--interval', metavar='', default=60, type=int, help=interval_help_text)
+    parser.add_argument('-mU', '--mongo-uri', required=True, metavar=' ', type=str, help='MongoDB uri.')
+    parser.add_argument('-n', '--coin-name', required=True, metavar=' ', type=str, help='Name of cryptocurrency.')
 
-    args = parser.parse_args()
-    _run_scanner(uri=args.uri[0], ban_time=args.ban_time, interval=args.interval)
+    args = vars(parser.parse_args())
+    _run_scanner(**args)
 
 
 if __name__ == '__main__':
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     cli()

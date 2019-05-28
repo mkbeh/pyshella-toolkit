@@ -1,46 +1,59 @@
 # -*- coding: utf-8 -*-
 import time
 
-from aiobitcoin.grambitcoin import GramBitcoin
+from aiobitcoin.network import Network
 from aiobitcoin.bitcoinerrors import NoConnectionToTheDaemon
-from src.extra import decorators, utils
 
-peers_file = utils.get_file_path('pyshella', 'peers.lst')
+from src.extra import utils
+from src.extra.aiomotor import AIOMotor
+
+
+motor = coin_name = None
 logger = utils.setup_logger(
     logger_name='scanner',
     log_file=utils.get_file_path('pyshella', 'scanner.log')
 )
 
 
+async def _write_peer(**kwargs):
+    await motor.insert_one(
+        document=kwargs,
+        collection=coin_name,
+        index='uri',
+        unique=True
+    )
+
+
 async def _get_ip_from_addr(addr):
     return addr.split(':')[0]
 
 
-@decorators.write(peers_file)
 async def _add_new_peers(uri, ban_time):
     added_peers_num = 0
 
-    async with GramBitcoin(url=uri) as gram:
-        for count, peer_info in enumerate(await gram.get_peer_info(to_list=False)):
+    async with Network(url=uri) as network:
+        for count, peer_info in enumerate(await network.get_peer_info(to_list=False)):
             if count < 2:
                 continue
 
             ip = await _get_ip_from_addr(peer_info["addr"])
             addr, subver = peer_info["addr"], peer_info["subver"]
-            await gram.set_ban(ip, bantime=ban_time)
+            await network.set_ban(ip, bantime=ban_time)
 
-            yield f'{addr}:{subver}\n'
+            await _write_peer(uri=addr, subver=subver)
             added_peers_num += 1
 
     logger.info(f'Successfully added {added_peers_num} new peers.')
 
 
 async def scanner(args):
-    uri, ban_time, interval = args.values()
+    global motor, coin_name
+    node_uri, ban_time, interval, mongo_uri, coin_name = args.values()
+    motor = AIOMotor(db_name='peers', uri=mongo_uri)
 
     while True:
         try:
-            await _add_new_peers(uri, ban_time)
+            await _add_new_peers(node_uri, ban_time)
         except NoConnectionToTheDaemon:
             logger.warning('Сonnection to daemon was lost.')
         finally:
