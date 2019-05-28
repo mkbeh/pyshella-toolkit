@@ -6,12 +6,12 @@ import uvloop
 from src.toolkit.scanner import scanner
 
 
-cli_desc = 'Scanner which parse Bitcoin or forks peers and writes them into file.'
+cli_desc = 'Scanner which parse Bitcoin or forks peers and writes them into MongoDB.'
 uri_help_text = 'Node URI.'
 ban_time_help_text = 'The time(days) which will be banned each peer (by default 14 days).'
 interval_help_text = 'Interval(secs) between call cycles for new peers (by default 60 secs).'
 epilog = """
-Usage example: pyshella_scanner -u <node_uri>
+Usage example: pyshella_scanner -nU <node_uri> -mU <mongo_uri> -n <coin_name>
 
 |-----------------|
 |Created by @mkbeh|
@@ -33,7 +33,8 @@ def cli():
     parser.add_argument('-mU', '--mongo-uri', required=True, metavar=' ', type=str, help='MongoDB uri.')
     parser.add_argument('-n', '--coin-name', required=True, metavar=' ', type=str, help='Name of cryptocurrency.')
 
-    _run_scanner(**vars(parser.parse_args()))
+    import secret
+    _run_scanner(**vars(parser.parse_args(secret.args_lst)))
 
 
 if __name__ == '__main__':
