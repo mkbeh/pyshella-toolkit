@@ -26,7 +26,7 @@ class PeersDataPreparation:
             cursor_length=self._hosts_block_size
         )
 
-    async def get_hosts_block(self):
+    async def get_peers_block(self):
         return map(
             lambda x: f'http://{x["uri"].split(":")[0]}', await self._non_scanned_peers
         )
@@ -140,7 +140,7 @@ class JSONRPCSearcher(PeersDataPreparation, HTTPHeadersGetter):
 
     async def run_jsonrpc_searcher(self):
         while True:
-            hosts_block = await self.get_hosts_block()
+            hosts_block = await self.get_peers_block()
 
             for i in range(1, self._last_port_num, self.ports_block_size):
                 if i + self.ports_block_size < self._last_port_num:
