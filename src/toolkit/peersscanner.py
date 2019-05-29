@@ -13,16 +13,10 @@ logger = utils.setup_logger(
     logger_name='scanner',
     log_file=utils.get_file_path('pyshella', 'scanner.log')
 )
-write_data_template = {
-    'scan status': False,
-    'jsonrpc port': None,
-    'brute status': False,
-    'jsonrpc credentials': None,
-}
 
 
 async def _write_peer(**kwargs):
-    kwargs.update(write_data_template)
+    kwargs.update({'scan status': False})
     await motor.insert_one(
         document=kwargs,
         collection=coin_name,
