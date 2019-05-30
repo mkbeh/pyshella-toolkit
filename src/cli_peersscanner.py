@@ -11,7 +11,8 @@ uri_help_text = 'Node URI.'
 ban_time_help_text = 'The time(days) which will be banned each peer (by default 14 days).'
 interval_help_text = 'Interval(secs) between call cycles for new peers (by default 60 secs).'
 epilog = """
-Usage example: pyshella_scanner -nU <node_uri> -mU <mongo_uri> -n <coin_name>
+-----------------------------------------------------------------------------------
+Usage example: pyshella-peers-scanner -nU <node_uri> -mU <mongo_uri> -n <coin_name>
 
 |-----------------|
 |Created by @mkbeh|
@@ -25,7 +26,7 @@ def _run_peers_scanner(**kwargs):
 
 
 def cli():
-    parser = argparse.ArgumentParser(prog='pyshella_scanner', description=cli_desc, epilog=epilog,
+    parser = argparse.ArgumentParser(prog='pyshella-peers-scanner', description=cli_desc, epilog=epilog,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-nU', '--node-uri', required=True, metavar='', dest='uri', type=str, help=uri_help_text)
     parser.add_argument('-b', '--ban-time', metavar='', default=14 * 86400, type=int, help=ban_time_help_text)

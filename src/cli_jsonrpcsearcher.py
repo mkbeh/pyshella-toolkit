@@ -15,7 +15,7 @@ ports_block_size_help = 'The number of ports that will be processed simultaneous
 verbose_help = 'Activate verbose mode. Will show all found headers.'
 epilog = """
 -----------------------------------------------------
-Usage example: -n Bitcoin -bT 1 -hS 1 -pS 200 -v True
+Usage example: pyshella-jsonrpc-searcher -n Bitcoin -bT 1 -hS 1 -pS 200 -v True
 
 |-----------------|
 |Created by @mkbeh|
@@ -30,7 +30,7 @@ def _run_jsonrpc_searcher(**kwargs):
 
 
 def cli():
-    parser = argparse.ArgumentParser(prog='pyshella_jsonrpc_searcher', description=cli_desc, epilog=epilog,
+    parser = argparse.ArgumentParser(prog='pyshella-jsonrpc-searcher', description=cli_desc, epilog=epilog,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('-n', '--coin-name', metavar='NAME', required=True, type=str, help='Name of cryptocurrency.')

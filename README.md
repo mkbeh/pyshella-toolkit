@@ -28,19 +28,20 @@ writes them to a file. For new peers, old ones are blacklisted.
 
 ### How to use
 ```
-usage: pyshella_scanner [-h] -u  [-b] [-i]
-
-Scanner which parse Bitcoin or forks peers and writes them into file.
+usage: pyshella_scanner [-h] -nU  [-b] [-i] -mU   -n
 
 optional arguments:
-  -h, --help        show this help message and exit
-  -u , --uri        Node URI.
-  -b , --ban-time   The time(days) which will be banned each peer (by default
-                    14 days).
-  -i , --interval   Interval(secs) between call cycles for new peers (by
-                    default 60 secs).
-                    
-Usage example: pyshella_scanner -u <node_uri>
+  -h, --help            show this help message and exit
+  -nU , --node-uri      Node URI.
+  -b , --ban-time       The time(days) which will be banned each peer (by
+                        default 14 days).
+  -i , --interval       Interval(secs) between call cycles for new peers (by
+                        default 60 secs).
+  -mU  , --mongo-uri    MongoDB uri.
+  -n  , --coin-name     Name of cryptocurrency.
+
+-----------------------------------------------------------------------------
+Usage example: pyshella_scanner -nU <node_uri> -mU <mongo_uri> -n <coin_name>
 ```
 
 ## JSON-RPC Searcher
@@ -50,8 +51,6 @@ Scanner which discovers Bitcoin/forks JSON-RPC on peers.
 ```
 usage: pyshella_jsonrpc_searcher [-h] -n NAME [-mU URI] [-cT SECS] [-rT SECS]
                                  [-bT SECS] [-hS NUM] [-pS NUM] [-v BOOL]
-
-Scanner which discovers Bitcoin/forks JSON-RPC on peers.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -71,5 +70,5 @@ optional arguments:
   -v BOOL               Activate verbose mode. Will show all found headers.
 
 -----------------------------------------------------
-Usage example: -n Bitcoin -bT 1 -hS 1 -pS 200 -v True
+Usage example: pyshella-jsonrpc-searcher -n Bitcoin -bT 1 -hS 1 -pS 200 -v True
 ```
