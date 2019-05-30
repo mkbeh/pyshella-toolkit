@@ -3,6 +3,7 @@ import re
 import time
 import asyncio
 import urllib.parse
+import itertools
 
 from src.extra.aiomotor import AIOMotor
 from src.extra import utils
@@ -123,34 +124,37 @@ class JSONRPCSearcher(PeersDataPreparation, HTTPHeadersGetter):
     def __init__(self, **kwargs):
         super(JSONRPCSearcher, self).__init__(**kwargs)
         self._cycle_timeout = kwargs.get('cT', .1)
+        self._block_timeout = kwargs.get('bT', 5 * 60)
 
     async def _update_peers_scan_status(self, peers_block):
         for peer in peers_block:
             await self.motor_peers.update_one(
-                find_data={'uri': re.compile(fr'{peer}')},
+                find_data={'uri': re.compile(fr'{peer.split("//")[1]}')},
                 update_data={'scan status': True},
                 collection=self.coin_name
             )
 
     async def _jsonrpc_searcher_handler(self, host, ports):
-        time.sleep(self._cycle_timeout)
         await asyncio.gather(
             *(self.find_jsonrpc(host, port) for port in ports)
         )
 
     async def run_jsonrpc_searcher(self):
         while True:
+            time.sleep(self._block_timeout)
             hosts_block = await self.get_peers_block()
 
             for i in range(1, self._last_port_num, self.ports_block_size):
+                time.sleep(self._cycle_timeout)
+                hosts_block, hosts_block_cp = itertools.tee(hosts_block)
+
                 if i + self.ports_block_size < self._last_port_num:
                     ports = utils.range_to_nums((i, i + self.ports_block_size))
                 else:
                     ports = utils.range_to_nums((i, self._last_port_num))
 
                 await asyncio.gather(
-                    *(self._jsonrpc_searcher_handler(host, ports) for host in hosts_block)
+                    *(self._jsonrpc_searcher_handler(host, ports) for host in hosts_block_cp)
                 )
 
             await self._update_peers_scan_status(hosts_block)
-            time.sleep(self._cycle_timeout)
