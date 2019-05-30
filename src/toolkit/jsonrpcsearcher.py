@@ -4,6 +4,7 @@ import time
 import asyncio
 import urllib.parse
 import itertools
+import logging
 
 from src.extra.aiomotor import AIOMotor
 from src.extra import utils
@@ -37,6 +38,7 @@ class HTTPHeadersGetter:
     def __init__(self, **kwargs):
         self._coin_name = kwargs.get('coin_name')
         self._read_timeout = kwargs.get('rT', .1)
+        self._verbose_mode = kwargs.get('verbose')
 
         self._motor_jsonrpc = AIOMotor(db_name='jsonrpc', uri=kwargs.get('mongo_uri'))
 
@@ -55,7 +57,7 @@ class HTTPHeadersGetter:
             if not line:
                 break
 
-            line = line.decode('utf-8').rstrip()
+            line = line.decode('latin-1').rstrip()
 
             if line:
                 lines.append(line)
@@ -70,7 +72,7 @@ class HTTPHeadersGetter:
             f"\r\n"
         )
 
-        writer.write(query.encode('utf-8'))
+        writer.write(query.encode('latin-1'))
         await writer.drain()
 
     async def _header_reading_handler(self, *args):
@@ -96,7 +98,7 @@ class HTTPHeadersGetter:
 
         try:
             reader, writer = await self._open_connection(url.hostname, port)
-        except (asyncio.TimeoutError, ConnectionRefusedError):
+        except (asyncio.TimeoutError, ConnectionRefusedError, OSError):
             return
         else:
             return await self._header_reading_handler(url, writer, reader)
@@ -108,6 +110,9 @@ class HTTPHeadersGetter:
 
         if not headers:
             return
+
+        if self._verbose_mode:
+            logging.info(f'{host}:{port} -> {headers}')
 
         for header in headers:
             if re.search(pattern_forbidden_error, header):
@@ -128,8 +133,10 @@ class JSONRPCSearcher(PeersDataPreparation, HTTPHeadersGetter):
 
     async def _update_peers_scan_status(self, peers_block):
         for peer in peers_block:
+            pattern = re.compile(fr'{peer.split("//")[1]}')
+
             await self.motor_peers.update_one(
-                find_data={'uri': re.compile(fr'{peer.split("//")[1]}')},
+                find_data={'uri': pattern, 'scan status': False},
                 update_data={'scan status': True},
                 collection=self.coin_name
             )

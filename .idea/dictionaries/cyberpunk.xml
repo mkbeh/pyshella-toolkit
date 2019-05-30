@@ -8,9 +8,12 @@
       <w>cryptocurrency</w>
       <w>ioloop</w>
       <w>jsonrpc</w>
+      <w>jsonrpcsearcher</w>
       <w>mkbeh</w>
+      <w>peersscanner</w>
       <w>pymongo</w>
       <w>pyshella</w>
+      <w>pythonpath</w>
       <w>subver</w>
       <w>uvloop</w>
       <w>сonnection</w>

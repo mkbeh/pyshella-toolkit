@@ -47,7 +47,7 @@ async def _add_new_peers(uri, ban_time):
     logger.info(f'Successfully added {added_peers_num} new peers.')
 
 
-async def scanner(args):
+async def peers_scanner(args):
     global motor, coin_name
     node_uri, ban_time, interval, mongo_uri, coin_name = args.values()
     motor = AIOMotor(db_name='peers', uri=mongo_uri)

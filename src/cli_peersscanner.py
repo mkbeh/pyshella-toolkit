@@ -3,7 +3,7 @@ import argparse
 import asyncio
 import uvloop
 
-from src.toolkit.peersscanner import scanner
+from src.toolkit.peersscanner import peers_scanner
 
 
 cli_desc = 'Scanner which parse Bitcoin or forks peers and writes them into MongoDB.'
@@ -19,9 +19,9 @@ Usage example: pyshella_scanner -nU <node_uri> -mU <mongo_uri> -n <coin_name>
 """
 
 
-def _run_scanner(**kwargs):
+def _run_peers_scanner(**kwargs):
     uvloop.install()
-    asyncio.run(scanner(kwargs))
+    asyncio.run(peers_scanner(kwargs))
 
 
 def cli():
@@ -33,8 +33,7 @@ def cli():
     parser.add_argument('-mU', '--mongo-uri', required=True, metavar=' ', type=str, help='MongoDB uri.')
     parser.add_argument('-n', '--coin-name', required=True, metavar=' ', type=str, help='Name of cryptocurrency.')
 
-    import secret
-    _run_scanner(**vars(parser.parse_args(secret.args_lst)))
+    _run_peers_scanner(**vars(parser.parse_args()))
 
 
 if __name__ == '__main__':
