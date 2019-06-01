@@ -10,6 +10,11 @@ from src.extra.aiomotor import AIOMotor
 from src.extra import utils
 
 
+jsonrpc_errors = [
+    '{"jsonrpc": "2.0", "error": {"code": -32700, "message": "invalid JSON"}, "id": null}',
+]
+
+
 class PeersDataPreparation:
     def __init__(self, **kwargs):
         super(PeersDataPreparation, self).__init__(**kwargs)
@@ -115,11 +120,11 @@ class HTTPHeadersGetter:
             logging.info(f'{host}:{port} -> {headers}')
 
         for header in headers:
-            if re.search(pattern_forbidden_error, header):
+            if re.search(pattern_forbidden_error, header) or '"code": -32700' in jsonrpc_errors:
                 await self._write_peer_data(peer=host, port=port, headers=headers, jsonrpc=None)
                 break
             elif re.search(pattern_jsonrpc, header):
-                await self._write_peer_data(peer=host, port=port, headers=headers, jsonrpc=port)
+                await self._write_peer_data(peer=host, headers=headers, jsonrpc=port)
                 break
 
 
