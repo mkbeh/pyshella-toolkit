@@ -5,6 +5,8 @@
       <w>aiofiles</w>
       <w>bitcoin</w>
       <w>bitcoinrpc</w>
+      <w>bruteforce</w>
+      <w>bruter</w>
       <w>cryptocurrency</w>
       <w>ioloop</w>
       <w>jsonrpc</w>

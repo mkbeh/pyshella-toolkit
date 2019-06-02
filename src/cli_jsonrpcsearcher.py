@@ -8,7 +8,7 @@ from src.toolkit.jsonrpcsearcher import JSONRPCSearcher
 
 default_mongo_uri = 'mongodb://root:toor@localhost:27017'
 cli_desc = 'Scanner which discovers Bitcoin/forks JSON-RPC on peers.'
-mongo_uri_help = 'MongoDB URI. Default: mongodb://root:toor@localhost:27017'
+mongo_uri_help = f'MongoDB URI. Default: {default_mongo_uri}'
 read_timeout_help = 'Time to wait for a response from the server after sending the request.'
 hosts_block_size_help = 'The number of hosts that will be processed simultaneously.'
 ports_block_size_help = 'The number of ports that will be processed simultaneously for each host.'
