@@ -52,3 +52,7 @@ class AIOMotor:
 
     async def update_many(self, find_data: dict, update_data: dict, collection: str):
         await self._db[collection].update_many(find_data, {'$set': update_data})
+
+    async def count_docs(self, collection: str, filter_=None):
+        filter_ = filter_ if filter_ else {}
+        return await self._db[collection].count_documents(filter_)

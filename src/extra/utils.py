@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 import logging
 
 
@@ -36,3 +37,13 @@ def get_file_path(dir_name, file_name):
 
 def range_to_nums(range_):
     return [i for i in range(*range_)]
+
+
+def is_template_in_str(s, template=r'\w+'):
+    pattern = re.compile(template)
+    return True if re.search(pattern, s) else False
+
+
+def count_lines(filename):
+    with open(filename) as file:
+        return sum(is_template_in_str(line) for line in file)
