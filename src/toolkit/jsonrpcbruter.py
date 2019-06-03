@@ -128,7 +128,7 @@ class JSONRPCBruter(BruterBase):
 
     def _get_sorted_data(self, data):
         return map(
-            lambda x: x[1], sorted(zip(self.brute_order, data))
+            lambda x: x[1], sorted(zip(self.brute_order, data), key=itemgetter(0))
         )
 
     async def bruteforce_handler(self, args, rng):
