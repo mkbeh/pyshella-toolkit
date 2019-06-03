@@ -47,3 +47,7 @@ def is_template_in_str(s, template=r'\w+'):
 def count_lines(filename):
     with open(filename) as file:
         return sum(is_template_in_str(line) for line in file)
+
+
+def clear_string(s):
+    return s.strip(' \n')

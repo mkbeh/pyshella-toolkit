@@ -33,8 +33,8 @@ class AIOMotor:
     async def insert_many(self, data: list, collection: str):
         await self._db[collection].insert_many(data)
 
-    async def find_one(self, data: dict, collection: str) -> dict:
-        return await self._db[collection].find_one(data)
+    async def find_one(self, data: dict, collection: str, skip: int = 0) -> dict:
+        return await self._db[collection].find_one(data, skip=skip)
 
     async def find_many(self, data: dict, collection: str, skip: int = 0,
                         cursor_length: int = 10_000, to_list: bool = True) -> list or not list:
@@ -53,6 +53,6 @@ class AIOMotor:
     async def update_many(self, find_data: dict, update_data: dict, collection: str):
         await self._db[collection].update_many(find_data, {'$set': update_data})
 
-    async def count_docs(self, collection: str, filter_=None):
+    async def count_docs(self, collection: str, filter_=None) -> int:
         filter_ = filter_ if filter_ else {}
         return await self._db[collection].count_documents(filter_)

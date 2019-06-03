@@ -5,51 +5,117 @@ import linecache
 from collections import namedtuple
 
 from src.extra import utils
-from src.extra.aiomotor import AIOMotor
+from src.extra.pymongodb import PyMongoDB
 
 
-class BruteBase:
+class BruterBase:
     _DataCount = namedtuple('DataCount', ['count', 'data'])
 
     def __init__(self, **kwargs):
         self._coin_name = kwargs.get('coin_name')
         self._brute_order = kwargs.get('brute_order')
+        self._num_threads = kwargs.get('threads')
         self._unordered_data = {
-            'H': AIOMotor(db_name='jsonrpc', uri=kwargs.get('mongo_uri')),
+            'H': PyMongoDB(db_name='jsonrpc', uri=kwargs.get('mongo_uri')),
             'U': kwargs.get('users'),
             'P': kwargs.get('passwords'),
         }
 
+    @staticmethod
+    def _prepare_data_from_db(docs):
+        return (
+            f'{document["peer"]}:{document["jsonrpc"]}'
+            for document in docs
+        )
+
+    def _get_data_from_db(self, data, skip, limit):
+        documents = data.find_many(
+            data={'jsonrpc': {'$gt': 0}},
+            collection=self._coin_name,
+            skip=skip,
+            limit=limit
+        )
+
+        return self._prepare_data_from_db(documents)
+
+    @staticmethod
+    def _get_data_from_file(data, start, end):
+        start = 1 if start == 0 else start
+        return (
+            utils.clear_string(linecache.getline(data, line))
+            for line in range(start, end)
+        )
+
+    def _get_single_data_from_db(self, data, point):
+        params = {
+            'data': {'jsonrpc': {'$gt': 0}},
+            'collection': self._coin_name,
+            'skip': point
+        }
+
+        document = data.find_one(**params)
+        return f'{document["peer"]}:{document["jsonrpc"]}'
+
+    @staticmethod
+    def _get_single_data_from_file(data, point):
+        return utils.clear_string(
+            linecache.getline(data, point)
+        )
+
+    def _get_data_block_by_point(self, data, point):
+        start, end = point, point + self._num_threads
+
+        if isinstance(data, str):
+            genexpr = self._get_data_from_file(data, start, end)
+        else:
+            genexpr = self._get_data_from_db(data, start, end)
+
+        return genexpr
+
+    def _get_data_by_point(self, data, point):
+        if isinstance(data, str):
+            return self._get_single_data_from_file(data, point + 1)
+        else:
+            return self._get_single_data_from_db(data, point)
+
     @property
     def _sorted_brute_order_data(self):
-        return [self._unordered_data.get(val) for val in self._unordered_data]
+        return [self._unordered_data.get(val) for val in self._brute_order]
 
-    async def els_in_data(self, data):
+    def _els_amount_in_data(self, data):
         try:
-            count = await data.count_docs(self._coin_name)
-        except AttributeError:
+            count = data.count(
+                collection=self._coin_name,
+                filter_={'jsonrpc': {'$gt': 0}}
+            )
+        except TypeError:
             count = utils.count_lines(data)
 
         return self._DataCount(count, data)
 
     @property
-    async def _data_counts(self):
+    def _data_counts(self):
         return [
-            await self.els_in_data(data)
+            self._els_amount_in_data(data)
             for data in self._sorted_brute_order_data
         ]
 
     @property
-    async def brute_data(self):
-        first, second, third = await self._data_counts
+    def brute_data(self):
+        first, second, third = self._data_counts
 
         for i in range(first.count):
+            first_val = self._get_data_by_point(first.data, i)
+
             for j in range(second.count):
-                for k in range(third.count):
-                    yield
+                second_val = self._get_data_by_point(second.data, j)
+
+                for k in range(0, third.count, self._num_threads):
+                    third_range = self._get_data_block_by_point(third.data, k)
+                    yield first_val, second_val, third_range
 
 
-class Bruter(BruteBase):
+class Bruter(BruterBase):
     def __init__(self, **kwargs):
         super(Bruter, self).__init__(**kwargs)
 
@@ -60,5 +126,5 @@ class Bruter(BruteBase):
         pass
 
     async def run_bruteforce(self):
-        async for data in self.brute_data:
-            print(data)
+        for data in self.brute_data:
+            pass
