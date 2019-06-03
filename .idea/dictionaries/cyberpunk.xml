@@ -14,6 +14,7 @@
       <w>ioloop</w>
       <w>jsonrpc</w>
       <w>jsonrpcsearcher</w>
+      <w>logins</w>
       <w>mkbeh</w>
       <w>ndwhite</w>
       <w>peersscanner</w>

@@ -10,7 +10,7 @@ default_mongo_uri = 'mongodb://root:toor@localhost:27017'
 
 cli_desc = 'Bitcoin/fork JSON-RPC bruter.'
 mongo_uri = f'MongoDB URI. Default: {default_mongo_uri}'
-users = 'Single user or file with users.'
+logins = 'Single login or file with logins.'
 passwords = 'Single password or file with passwords.'
 threads = 'The number of coroutines that will be asynchronous in bruteforce process.'
 epilog = """
@@ -35,9 +35,9 @@ def cli():
 
     parser.add_argument('-n', '--coin-name', metavar='NAME', required=True, type=str, help='Name of cryptocurrency.')
     parser.add_argument('-mU', '--mongo-uri', metavar='URI', type=str, default=default_mongo_uri, help=mongo_uri)
-    parser.add_argument('-u', '--users', metavar='SINGLE/FILE', required=True, type=str, help=users)
+    parser.add_argument('-l', '--logins', metavar='SINGLE/FILE', required=True, type=str, help=logins)
     parser.add_argument('-p', '--passwords', metavar='SINGLE/FILE', required=True, type=str, help=passwords)
-    parser.add_argument('-b', '--brute-order', metavar='NUMS', type=list, default=['H', 'U', 'P'], help=threads)
+    parser.add_argument('-b', '--brute-order', metavar='NUMS', type=list, default=['H', 'L', 'P'], help=threads)
     parser.add_argument('-t', '--threads', metavar='NUM', type=int, default=1, help=threads)
 
     from secret import args_lst3

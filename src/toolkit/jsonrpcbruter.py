@@ -3,6 +3,7 @@ import asyncio
 import linecache
 
 from collections import namedtuple
+from operator import itemgetter
 
 from src.extra import utils
 from src.extra.pymongodb import PyMongoDB
@@ -12,12 +13,12 @@ class BruterBase:
     _DataCount = namedtuple('DataCount', ['count', 'data'])
 
     def __init__(self, **kwargs):
+        self.brute_order = kwargs.get('brute_order')
         self._coin_name = kwargs.get('coin_name')
-        self._brute_order = kwargs.get('brute_order')
         self._num_threads = kwargs.get('threads')
         self._unordered_data = {
             'H': PyMongoDB(db_name='jsonrpc', uri=kwargs.get('mongo_uri')),
-            'U': kwargs.get('users'),
+            'L': kwargs.get('logins'),
             'P': kwargs.get('passwords'),
         }
 
@@ -82,7 +83,7 @@ class BruterBase:
     @property
     def _sorted_brute_order_data(self):
         return [
-            self._unordered_data.get(val) for val in self._brute_order
+            self._unordered_data.get(val) for val in self.brute_order
         ]
 
     def _els_amount_in_data(self, data):
@@ -122,12 +123,22 @@ class JSONRPCBruter(BruterBase):
     def __init__(self, **kwargs):
         super(JSONRPCBruter, self).__init__(**kwargs)
 
-    async def bruteforce(self):
+    async def bruteforce(self, host, login, password):
         pass
 
-    async def bruteforce_handler(self):
-        pass
+    def _get_sorted_data(self, data):
+        return map(
+            lambda x: x[1], sorted(zip(self.brute_order, data))
+        )
+
+    async def bruteforce_handler(self, args, rng):
+        await asyncio.gather(
+            *(self.bruteforce(*self._get_sorted_data((*args, val)))
+              for val in rng)
+        )
 
     async def run_bruteforce(self):
-        for data in self.brute_data:
-            pass
+        while True:
+            for *args, rng in self.brute_data:
+                await self.bruteforce_handler(args, rng=rng)
+            break
