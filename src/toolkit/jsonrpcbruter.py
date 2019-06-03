@@ -99,10 +99,10 @@ class BruterBase:
 
     @property
     def _data_counts(self):
-        return [
+        return (
             self._els_amount_in_data(data)
             for data in self._sorted_brute_order_data
-        ]
+        )
 
     @property
     def brute_data(self):
