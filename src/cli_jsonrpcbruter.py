@@ -3,7 +3,7 @@ import argparse
 import asyncio
 import uvloop
 
-from src.toolkit.jsonrpcbruter import Bruter
+from src.toolkit.jsonrpcbruter import JSONRPCBruter
 
 
 default_mongo_uri = 'mongodb://root:toor@localhost:27017'
@@ -26,7 +26,7 @@ Usage example: [TO DO]
 def _run_jsonrpc_bruter(**kwargs):
     uvloop.install()
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(Bruter(**kwargs).run_bruteforce())
+    loop.run_until_complete(JSONRPCBruter(**kwargs).run_bruteforce())
 
 
 def cli():

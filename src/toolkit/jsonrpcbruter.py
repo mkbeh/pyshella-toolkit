@@ -118,9 +118,9 @@ class BruterBase:
                     yield first_val, second_val, third_range
 
 
-class Bruter(BruterBase):
+class JSONRPCBruter(BruterBase):
     def __init__(self, **kwargs):
-        super(Bruter, self).__init__(**kwargs)
+        super(JSONRPCBruter, self).__init__(**kwargs)
 
     async def bruteforce(self):
         pass
