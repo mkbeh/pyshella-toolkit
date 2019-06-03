@@ -33,7 +33,8 @@ class BruterBase:
             data={'jsonrpc': {'$gt': 0}},
             collection=self._coin_name,
             skip=skip,
-            limit=limit
+            limit=limit,
+            to_list=False
         )
 
         return self._prepare_data_from_db(documents)
@@ -80,7 +81,9 @@ class BruterBase:
 
     @property
     def _sorted_brute_order_data(self):
-        return [self._unordered_data.get(val) for val in self._brute_order]
+        return [
+            self._unordered_data.get(val) for val in self._brute_order
+        ]
 
     def _els_amount_in_data(self, data):
         try:
