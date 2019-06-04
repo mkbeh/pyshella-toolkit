@@ -28,7 +28,7 @@ writes them to a file. For new peers, old ones are blacklisted.
 
 ### How to use
 ```
-usage: pyshella_scanner [-h] -nU  [-b] [-i] -mU   -n
+usage: pyshella-peers-scanner [-h] -nU  [-b] [-i] -mU   -n
 
 optional arguments:
   -h, --help            show this help message and exit

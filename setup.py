@@ -8,7 +8,7 @@ setup(
     description='BTC/fork hack toolkit.',
     author='mkbeh',
     license='MIT',
-    platforms='any',
+    platforms='linux',
     install_requires=[
         'aiobitcoin==0.71.2a0',
         'uvloop==0.12.2',
