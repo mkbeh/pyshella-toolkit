@@ -10,11 +10,11 @@ setup(
     license='MIT',
     platforms='any',
     install_requires=[
-        'aiobitcoin',
-        'uvloop',
-        'aiofiles',
-        'pymongo',
-        'motor',
+        'aiobitcoin==0.71.2a0',
+        'uvloop==0.12.2',
+        'aiofiles==0.4.0',
+        'pymongo==3.8.0',
+        'motor==2.0.0',
     ],
     packages=find_packages(),
     entry_points={
