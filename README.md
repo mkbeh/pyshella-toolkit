@@ -49,7 +49,7 @@ Scanner which discovers Bitcoin/forks JSON-RPC on peers.
 
 ### How to use
 ```
-usage: pyshella_jsonrpc_searcher [-h] -n NAME [-mU URI] [-cT SECS] [-rT SECS]
+usage: pyshella-jsonrpc-searcher [-h] -n NAME [-mU URI] [-cT SECS] [-rT SECS]
                                  [-bT SECS] [-hS NUM] [-pS NUM] [-v BOOL]
 
 optional arguments:

@@ -120,6 +120,8 @@ class BruterBase:
 
 
 class JSONRPCBruter(BruterBase):
+    _uri_template = ''
+
     def __init__(self, **kwargs):
         super(JSONRPCBruter, self).__init__(**kwargs)
 
