@@ -41,7 +41,7 @@ optional arguments:
   -n  , --coin-name     Name of cryptocurrency.
 
 -----------------------------------------------------------------------------
-Usage example: pyshella_scanner -nU <node_uri> -mU <mongo_uri> -n <coin_name>
+Usage example: pyshella-peers-scanner -nU <node_uri> -mU <mongo_uri> -n <coin_name>
 ```
 
 ## JSON-RPC Searcher
