@@ -28,6 +28,7 @@ Usage example: [TO DO]
 def _run_jsonrpc_bruter(**kwargs):
     uvloop.install()
     loop = asyncio.get_event_loop()
+    kwargs.update(loop=loop)
     loop.run_until_complete(JSONRPCBruter(**kwargs).run_bruteforce())
 
 

