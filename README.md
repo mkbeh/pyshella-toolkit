@@ -28,7 +28,7 @@ writes them to a file. For new peers, old ones are blacklisted.
 
 ### How to use
 ```
-usage: pyshella_scanner [-h] -nU  [-b] [-i] -mU   -n
+usage: pyshella-peers-scanner [-h] -nU  [-b] [-i] -mU   -n
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -41,7 +41,7 @@ optional arguments:
   -n  , --coin-name     Name of cryptocurrency.
 
 -----------------------------------------------------------------------------
-Usage example: pyshella_scanner -nU <node_uri> -mU <mongo_uri> -n <coin_name>
+Usage example: pyshella-peers-scanner -nU <node_uri> -mU <mongo_uri> -n <coin_name>
 ```
 
 ## JSON-RPC Searcher
