@@ -13,6 +13,8 @@ mongo_uri = f'MongoDB URI. Default: {default_mongo_uri}'
 logins = 'Single login or file with logins.'
 passwords = 'Single password or file with passwords.'
 threads = 'The number of coroutines that will be asynchronous in bruteforce process.'
+read_timeout_help = 'Time to wait for a response from the server after sending the request.'
+cycle_timeout_help = 'Timeout between getting new data for brute.'
 epilog = """
 -----------------------------------------------------
 Usage example: [TO DO]
@@ -39,6 +41,8 @@ def cli():
     parser.add_argument('-p', '--passwords', metavar='SINGLE/FILE', required=True, type=str, help=passwords)
     parser.add_argument('-b', '--brute-order', metavar='NUMS', type=list, default=['H', 'L', 'P'], help=threads)
     parser.add_argument('-t', '--threads', metavar='NUM', type=int, default=1, help=threads)
+    parser.add_argument('-rT', '--read-timeout', metavar='SECS', type=float, default=.1, help=read_timeout_help)
+    parser.add_argument('-cT', '--cycle-timeout', metavar='SECS', type=float, default=30, help=cycle_timeout_help)
 
     from secret import args_lst3
     _run_jsonrpc_bruter(**vars(parser.parse_args(args_lst3)))

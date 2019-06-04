@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 import asyncio
 import linecache
 
@@ -124,8 +125,12 @@ class BruterBase:
 
 
 class JSONRPCBruter(BruterBase):
+    _wait_timeout = 10
+
     def __init__(self, **kwargs):
         super(JSONRPCBruter, self).__init__(**kwargs)
+        self._read_timeout = kwargs.get('read_timeout')
+        self._cycle_timeout = kwargs.get('cycle_timeout')
 
     @staticmethod
     async def _close_gram_sessions(grams):
@@ -137,11 +142,13 @@ class JSONRPCBruter(BruterBase):
 
     async def _bruteforce(self, host, login, password, gram):
         uri = await self._get_uri(host.split('//')[1], login, password)
-        blockchain = Blockchain(url=uri, gram=gram, read_timeout=.1)
+        blockchain = Blockchain(url=uri, gram=gram, read_timeout=self._read_timeout)
 
         try:
-            await blockchain.get_difficulty()
+            await asyncio.wait_for(blockchain.get_difficulty(), self._wait_timeout)
         except bitcoinerrors.IncorrectCreds:
+            pass
+        except asyncio.futures.TimeoutError:
             pass
 
     def _get_sorted_data(self, data):
@@ -163,4 +170,5 @@ class JSONRPCBruter(BruterBase):
                 await self._bruteforce_handler(args, rng=rng, grams=grams)
 
             await self._close_gram_sessions(grams)
+            time.sleep(self._cycle_timeout)
             break
