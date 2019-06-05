@@ -35,11 +35,10 @@ class BruterBase:
             for document in docs
         )
 
-    def get_peers_from_db(self, skip, limit):
+    def get_peers_from_db(self, limit):
         documents = self.mongo_jsonrpc.find_many(
             data={'jsonrpc': {'$gt': 0}, 'bruted': False},
             collection=self.coin_name,
-            skip=skip,
             limit=limit,
             to_list=False
         )
@@ -60,15 +59,14 @@ class BruterBase:
         if isinstance(data, str):
             genexpr = self._get_data_from_file(data, start, end)
         else:
-            genexpr = self.get_peers_from_db(start, end)
+            genexpr = self.get_peers_from_db(end)
 
         return genexpr
 
-    def _get_peer_from_db(self, point):
+    def _get_peer_from_db(self):
         params = {
             'data': {'jsonrpc': {'$gt': 0}, 'bruted': False},
             'collection': self.coin_name,
-            'skip': point
         }
 
         document = self.mongo_jsonrpc.find_one(**params)
@@ -84,7 +82,7 @@ class BruterBase:
         if isinstance(data, str):
             return self._get_single_data_from_file(data, point + 1)
         else:
-            return self._get_peer_from_db(point)
+            return self._get_peer_from_db()
 
     @property
     def _sorted_brute_order_data(self):
