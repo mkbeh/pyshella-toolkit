@@ -177,7 +177,7 @@ class EmptyCredentialsChecker(BruterBase):
         grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
 
         for point in range(0, self._peers_count, self.num_threads):
-            non_checked_peers = self.get_peers_from_db(point, self.num_threads)
+            non_checked_peers = self.get_peers_from_db(self.num_threads)
             await self._checker_handler(non_checked_peers, grams)
 
         await self.close_gram_sessions(grams)
