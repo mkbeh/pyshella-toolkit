@@ -130,6 +130,7 @@ class EmptyCredentialsChecker(BruterBase):
         super(EmptyCredentialsChecker, self).__init__(**kwargs)
         self._read_timeout = kwargs.get('read_timeout')
         self._loop = kwargs.get('loop')
+
         self._loop.run_until_complete(self.check_peers_with_empty_creds())
 
     @staticmethod
