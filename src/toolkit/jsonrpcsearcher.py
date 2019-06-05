@@ -121,10 +121,10 @@ class HTTPHeadersGetter:
 
         for header in headers:
             if re.search(pattern_forbidden_error, header) or '"code": -32700' in jsonrpc_errors:
-                await self._write_peer_data(peer=host, port=port, headers=headers, jsonrpc=None)
+                await self._write_peer_data(peer=host, port=port, headers=headers, jsonrpc=None, bruted=False)
                 break
             elif re.search(pattern_jsonrpc, header):
-                await self._write_peer_data(peer=host, headers=headers, jsonrpc=port)
+                await self._write_peer_data(peer=host, headers=headers, jsonrpc=port, bruted=False)
                 break
 
 
