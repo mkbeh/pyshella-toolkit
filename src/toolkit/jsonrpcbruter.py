@@ -170,7 +170,7 @@ class EmptyCredentialsChecker(BruterBase):
             filter_={'jsonrpc': {'$gt': 0}, 'bruted': False}
         )
 
-    async def _common_checker_handler(self, grams):
+    async def _run_check_empty_by_block(self, grams):
         for point in range(0, self._peers_count, self.num_threads):
             non_checked_peers = self.get_peers_from_db(self.num_threads)
             await self._checker_handler(non_checked_peers, grams)
@@ -182,7 +182,7 @@ class EmptyCredentialsChecker(BruterBase):
 
         while True:
             try:
-                status_without_errs = await self._common_checker_handler(grams)
+                status_without_errs = await self._run_check_empty_by_block(grams)
             except bitcoinerrors.NoConnectionToTheDaemon:
                 pass
             except asyncio.futures.TimeoutError:
@@ -210,7 +210,7 @@ class JSONRPCBruter(EmptyCredentialsChecker):
               for val, gram in zip(rng, grams))
         )
 
-    async def _common_bruteforce_handler(self, grams):
+    async def _run_bruteforce_by_block(self, grams):
         for *args, rng in self.brute_data:
             await self._bruteforce_handler(args, rng=rng, grams=grams)
 
@@ -219,7 +219,7 @@ class JSONRPCBruter(EmptyCredentialsChecker):
             grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
 
             try:
-                await self._common_bruteforce_handler(grams)
+                await self._run_bruteforce_by_block(grams)
             except bitcoinerrors.NoConnectionToTheDaemon:
                 pass
             except asyncio.futures.TimeoutError:
