@@ -37,7 +37,7 @@ class BruterBase:
 
     def get_peers_from_db(self, skip, limit):
         documents = self.mongo_jsonrpc.find_many(
-            data={'jsonrpc': {'$gt': 0}},
+            data={'jsonrpc': {'$gt': 0}, 'bruted': False},
             collection=self.coin_name,
             skip=skip,
             limit=limit,
@@ -66,7 +66,7 @@ class BruterBase:
 
     def _get_peer_from_db(self, point):
         params = {
-            'data': {'jsonrpc': {'$gt': 0}},
+            'data': {'jsonrpc': {'$gt': 0}, 'bruted': False},
             'collection': self.coin_name,
             'skip': point
         }
@@ -96,7 +96,7 @@ class BruterBase:
         try:
             count = data.count(
                 collection=self.coin_name,
-                filter_={'jsonrpc': {'$gt': 0}}
+                filter_={'jsonrpc': {'$gt': 0}, 'bruted': False}
             )
         except TypeError:
             count = utils.count_lines(data)
@@ -172,7 +172,7 @@ class EmptyCredentialsChecker(BruterBase):
     def _peers_count(self):
         return self.mongo_jsonrpc.count(
             collection=self.coin_name,
-            filter_={'jsonrpc': {'$gt': 0}}
+            filter_={'jsonrpc': {'$gt': 0}, 'bruted': False}
         )
 
     async def check_peers_with_empty_creds(self):
