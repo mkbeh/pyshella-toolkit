@@ -156,10 +156,6 @@ class EmptyCredentialsChecker(BruterBase):
             await asyncio.wait_for(blockchain.get_difficulty(), self._wait_timeout)
         except bitcoinerrors.IncorrectCreds:
             pass
-        except bitcoinerrors.NoConnectionToTheDaemon:
-            pass
-        except asyncio.futures.TimeoutError:
-            pass
 
     async def _checker_handler(self, non_checked_peers, grams):
         await asyncio.gather(
@@ -173,12 +169,26 @@ class EmptyCredentialsChecker(BruterBase):
             filter_={'jsonrpc': {'$gt': 0}, 'bruted': False}
         )
 
-    async def check_peers_with_empty_creds(self):
-        grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
-
+    async def _common_checker_handler(self, grams):
         for point in range(0, self._peers_count, self.num_threads):
             non_checked_peers = self.get_peers_from_db(self.num_threads)
             await self._checker_handler(non_checked_peers, grams)
+
+        return True
+
+    async def check_peers_with_empty_creds(self):
+        grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
+
+        while True:
+            try:
+                status_without_errs = await self._common_checker_handler(grams)
+            except bitcoinerrors.NoConnectionToTheDaemon:
+                pass
+            except asyncio.futures.TimeoutError:
+                pass
+            else:
+                if status_without_errs:
+                    break
 
         await self.close_gram_sessions(grams)
 
@@ -199,13 +209,21 @@ class JSONRPCBruter(EmptyCredentialsChecker):
               for val, gram in zip(rng, grams))
         )
 
+    async def _common_bruteforce_handler(self, grams):
+        for *args, rng in self.brute_data:
+            await self._bruteforce_handler(args, rng=rng, grams=grams)
+
     async def run_bruteforce(self):
         while True:
             grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
 
-            for *args, rng in self.brute_data:
-                await self._bruteforce_handler(args, rng=rng, grams=grams)
-
-            await self.close_gram_sessions(grams)
-            # time.sleep(self._cycle_timeout)
+            try:
+                await self._common_bruteforce_handler(grams)
+            except bitcoinerrors.NoConnectionToTheDaemon:
+                pass
+            except asyncio.futures.TimeoutError:
+                pass
+            finally:
+                await self.close_gram_sessions(grams)
+                # time.sleep(self._cycle_timeout)
             break
