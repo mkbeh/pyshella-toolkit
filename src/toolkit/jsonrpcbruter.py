@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 import time
 import asyncio
 import linecache
@@ -134,9 +135,14 @@ class EmptyCredentialsChecker(BruterBase):
         self.async_mongo_creds = AIOMotor(db_name='credentials', uri=kwargs.get('mongo_uri'))
         self.async_mongo_jsonrpc = AIOMotor(db_name='jsonrpc', uri=kwargs.get('mongo_uri'))
 
+    @staticmethod
+    async def _get_host_from_uri(uri):
+        pattern = re.compile(r'http://(\d+\.){3}\d+')
+        return re.search(pattern, uri).group()
+
     async def _update_brute_status(self, peer, status):
         await self.async_mongo_jsonrpc.update_one(
-            find_data={'peer': peer},
+            find_data={'peer': await self._get_host_from_uri(peer)},
             update_data={'bruted': status},
             collection=self.coin_name
         )
@@ -238,12 +244,13 @@ class JSONRPCBruter(EmptyCredentialsChecker):
     async def run_bruteforce(self):
         while True:
             await self.check_peers_with_empty_creds()
-            grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
-
-            try:
-                await self._run_bruteforce_by_block(grams)
-            except (bitcoinerrors.NoConnectionToTheDaemon, asyncio.futures.TimeoutError):
-                continue
-            finally:
-                await self.close_gram_sessions(grams)
-                time.sleep(self._cycle_timeout)
+            # grams = [GramBitcoin(session_required=True) for _ in range(self.num_threads)]
+            #
+            # try:
+            #     await self._run_bruteforce_by_block(grams)
+            # except (bitcoinerrors.NoConnectionToTheDaemon, asyncio.futures.TimeoutError):
+            #     continue
+            # finally:
+            #     await self.close_gram_sessions(grams)
+            #     time.sleep(self._cycle_timeout)
+            break
