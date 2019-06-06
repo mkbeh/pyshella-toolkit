@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyshella-toolkit',
-    version='0.45.17',
+    version='0.55.23',
     description='BTC/fork hack toolkit.',
     author='mkbeh',
     license='MIT',
@@ -21,6 +21,7 @@ setup(
         'console_scripts': [
             'pyshella-peers-scanner = src.cli_peersscanner:cli',
             'pyshella-jsonrpc-searcher = src.cli_jsonrpcsearcher:cli',
+            'pyshella-jsonrpc-bruter = src.cli_jsonrpcbruter:cli',
             'pyshella-cw = src.cli_cw:test'
         ],
     },

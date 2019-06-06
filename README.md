@@ -9,6 +9,14 @@ cli scripts such as `peers-scanner`, `jsonrpc-searcher`,
 `jsonrpc-bruter`, `coins-withdrawal`.
 
 
+## **Getting started**
+* [Installation](#installation)
+* [Peers Scanner](#peers-scanner)
+* [JSON-RPC Searcher](#json-rpc-searcher)
+* [JSON-RPC Bruter](#json-rpc-bruter)
+
+
+
 ## Installation
 ```bash
 git clone https://github.com/mkbeh/pyshella-toolkit
@@ -71,4 +79,43 @@ optional arguments:
 
 -----------------------------------------------------
 Usage example: pyshella-jsonrpc-searcher -n Bitcoin -bT 1 -hS 1 -pS 200 -v True
+```
+
+
+## JSON-RPC Bruter
+Bitcoin/fork JSON-RPC bruter.
+
+### How to use
+```
+usage: pyshella-jsonrpc-bruter [-h] -n NAME [-mU URI] -l SINGLE/FILE -p
+                               SINGLE/FILE [-b ORDER] [-t NUM] [-rT SECS]
+                               [-cT SECS]
+optional arguments:
+  -h, --help            show this help message and exit
+  -n NAME, --coin-name NAME
+                        Name of cryptocurrency.
+  -mU URI, --mongo-uri URI
+                        MongoDB URI. Default:
+                        mongodb://root:toor@localhost:27017
+  -l SINGLE/FILE, --logins SINGLE/FILE
+                        Single login or file with logins.
+  -p SINGLE/FILE, --passwords SINGLE/FILE
+                        Single password or file with passwords.
+  -b ORDER, --brute-order ORDER
+                        The order in which the brute force process will occur.
+                        Where H - hosts, L - logins, P - passwords. Default:
+                        HLP. Examples: HLP, LPH, PHL, etc.
+  -t NUM, --threads NUM
+                        The number of coroutines that will be asynchronous in
+                        bruteforce process.
+  -rT SECS, --read-timeout SECS
+                        Time to wait for a response from the server after
+                        sending the request.
+  -cT SECS, --cycle-timeout SECS
+                        Timeout between getting new data for brute.
+
+----------------------------------------------------------------------------------------------
+Usage example:
+-> pyshella-jsonrpc-bruter --help
+-> pyshella-jsonrpc-bruter -n Bitcoin -t 20 -l <logins_file> -p <pwds_file> -b HLP
 ```
