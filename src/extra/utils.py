@@ -2,6 +2,7 @@
 import os
 import re
 import logging
+import string
 
 
 def setup_logger(logger_name, log_file, level=logging.INFO):
@@ -51,3 +52,13 @@ def count_lines(filename):
 
 def clear_string(s):
     return s.strip(' \n')
+
+
+def del_spec_chars_from_strings(*args):
+    pattern = re.compile(fr'[{string.punctuation}]')
+    result = []
+
+    for arg in args:
+        result.append(pattern.sub('', arg))
+
+    return result

@@ -3,6 +3,7 @@
     <words>
       <w>aiobitcoin</w>
       <w>aiofiles</w>
+      <w>asyncio</w>
       <w>bitcoin</w>
       <w>bitcoinrpc</w>
       <w>blockchain</w>

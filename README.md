@@ -83,7 +83,7 @@ Usage example: pyshella-jsonrpc-searcher -n Bitcoin -bT 1 -hS 1 -pS 200 -v True
 
 
 ## JSON-RPC Bruter
-Bitcoin/fork JSON-RPC bruter.
+Bitcoin/fork JSON-RPC bruter. Based on asyncio.
 
 ### How to use
 ```

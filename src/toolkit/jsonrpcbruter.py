@@ -170,6 +170,7 @@ class EmptyCredentialsChecker(BruterBase):
 
     @staticmethod
     async def _get_uri_with_creds(host, login, pwd):
+        login, pwd = utils.del_spec_chars_from_strings(login, pwd)
         return f'http://{login}:{pwd}@{host}'
 
     async def _uri_handler(self, host, login, pwd):
