@@ -11,8 +11,8 @@ cli_interval_help = 'Timeout after coins withdrawal from all the peers that were
                     'at the moment.'
 cli_withdrawal_help = 'The address to which the coins will be sent.'
 cli_epilog = """
------------------------------------------------------------------------------------
-Usage example: [TO DO]
+-----------------------------------------------------------------------------------------------------------------------
+Usage example: pyshella-coins-withdrawal -n Bitcoin -mU mongodb://root:toor@localhost:27017 -a <withdrawal_addr> -i 300
 
 |-----------------|
 |Created by @mkbeh|
@@ -30,13 +30,12 @@ def _run_coins_withdrawal(**kwargs):
 def cli():
     parser = argparse.ArgumentParser(prog='pyshella-coins-withdrawal', description=cli_description, epilog=cli_epilog,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-n', '--coin-name', required=True, metavar=' ', type=str, help='Name of cryptocurrency.')
-    parser.add_argument('-mU', '--mongo-uri', required=True, metavar=' ', type=str, help='MongoDB uri.')
-    parser.add_argument('-a', '--withdrawal-address', required=True, metavar=' ', type=str, help=cli_withdrawal_help)
-    parser.add_argument('-i', '--interval', metavar='', default=3*60, type=int, help=cli_interval_help)
+    parser.add_argument('-n', '--coin-name', required=True, metavar='NAME', type=str, help='Name of cryptocurrency.')
+    parser.add_argument('-mU', '--mongo-uri', required=True, metavar='URI', type=str, help='MongoDB uri.')
+    parser.add_argument('-a', '--withdrawal-address', required=True, metavar='ADDR', type=str, help=cli_withdrawal_help)
+    parser.add_argument('-i', '--interval', metavar='SECS', default=3*60, type=int, help=cli_interval_help)
 
-    from secret import args_lst4
-    _run_coins_withdrawal(**vars(parser.parse_args(args_lst4)))
+    _run_coins_withdrawal(**vars(parser.parse_args()))
 
 
 if __name__ == '__main__':

