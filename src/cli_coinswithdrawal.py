@@ -9,6 +9,7 @@ from src.toolkit.coinswithdrawal import CoinsWithdrawal
 cli_description = 'Utility which withdrawal crypto currency from bruted JSON-RPC.'
 cli_interval_help = 'Timeout after coins withdrawal from all the peers that were collected in the database ' \
                     'at the moment.'
+cli_withdrawal_help = 'The address to which the coins will be sent.'
 cli_epilog = """
 -----------------------------------------------------------------------------------
 Usage example: [TO DO]
@@ -31,6 +32,7 @@ def cli():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-n', '--coin-name', required=True, metavar=' ', type=str, help='Name of cryptocurrency.')
     parser.add_argument('-mU', '--mongo-uri', required=True, metavar=' ', type=str, help='MongoDB uri.')
+    parser.add_argument('-a', '--withdrawal-address', required=True, metavar=' ', type=str, help=cli_withdrawal_help)
     parser.add_argument('-i', '--interval', metavar='', default=3*60, type=int, help=cli_interval_help)
 
     from secret import args_lst4

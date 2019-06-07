@@ -22,5 +22,14 @@ class PyMongoDB(object):
         filter_ = filter_ if filter_ else {}
         return self._db[collection].count(filter_)
 
+    def update_one(self, find_data: dict, update_data: dict, collection: str):
+        self._db[collection].update_one(
+            filter=find_data,
+            update={'$set': update_data},
+        )
+
+    def insert_one(self, document: dict, collection: str):
+        self._db[collection].insert_one(document)
+
     def finish(self):
         self._db.logout()
