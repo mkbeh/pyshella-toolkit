@@ -4,5 +4,4 @@ Dockerfile
 docker-compose.yml
 .*
 *.md
-test.py
-secret.py
+*.py
