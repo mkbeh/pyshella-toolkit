@@ -59,7 +59,6 @@ if [[ "$ENV" = 'DEBUG' ]]; then
     echo -e "\e[1;32mRunning Toolkit in DEBUG mode...\e[0m"
     echo -e "\e[1;32mFiles with logs are located by path ~/.local/share/pyshella-toolkit/\e[0m"
     sleep 4s
-
     debug
 
     while sleep 60; do
