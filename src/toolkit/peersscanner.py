@@ -11,7 +11,7 @@ from src.extra.aiomotor import AIOMotor
 motor = coin_name = None
 logger = utils.setup_logger(
     logger_name='scanner',
-    log_file=utils.get_file_path('pyshella', 'scanner.log')
+    log_file=utils.get_file_path('pyshella-toolkit', 'scanner.log')
 )
 
 

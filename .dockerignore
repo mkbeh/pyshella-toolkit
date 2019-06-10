@@ -1,0 +1,8 @@
+venv
+test_data
+Dockerfile
+docker-compose.yml
+.*
+*.md
+test.py
+secret.py

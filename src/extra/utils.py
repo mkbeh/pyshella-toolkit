@@ -2,7 +2,7 @@
 import os
 import re
 import logging
-import string
+import pathlib
 
 
 def setup_logger(logger_name, log_file, level=logging.INFO):
@@ -18,12 +18,12 @@ def setup_logger(logger_name, log_file, level=logging.INFO):
 
 
 def make_work_dir(dir_name):
-    path = os.path.join(
-        os.getenv('XDG_DATA_HOME', os.path.expanduser("~/.local/share")), dir_name
+    path = pathlib.Path(
+        os.path.join(
+            os.getenv('XDG_DATA_HOME', os.path.expanduser("~/.local/share")), dir_name
+        )
     )
-
-    if not os.path.exists(path):
-        os.mkdir(path)
+    path.mkdir(parents=True, exist_ok=True)
 
     return path
 
