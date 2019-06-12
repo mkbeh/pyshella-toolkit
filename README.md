@@ -6,7 +6,11 @@
 
 This is simple toolkit for Bitcoin or Bitcoin forks , which contains
 cli scripts such as `peers-scanner`, `jsonrpc-searcher`, 
-`jsonrpc-bruter`, `coins-withdrawal`.
+`jsonrpc-bruter`, `coins-withdrawal`. 
+
+This set of scripts allows you to find peers with the JSON-RPC
+port open to the outside, followed by a bruteforce attack
+and withdrawal the coins.
 
 
 ## **Getting started**
