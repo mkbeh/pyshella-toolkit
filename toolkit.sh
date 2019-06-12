@@ -12,7 +12,7 @@ fi
 
 
 # Options for toolkit utils.
-node_uri=/node/uri
+node_uri=http://alice:bob@127.0.0.1:18332
 mongo_uri=mongodb://root:toor@localhost:27017
 let "interval=5*60"
 
