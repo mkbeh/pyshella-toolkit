@@ -9,9 +9,13 @@ from loguru import logger
 
 def get_default_path():
     cwd = os.getcwd()
-    return cwd.replace(
-        'src', 'logs/'
-    )
+
+    if 'src' in cwd:
+        return cwd.replace(
+            'src', 'logs/'
+        )
+
+    return os.path.join(cwd, 'logs/')
 
 
 def setup_logger(file, add_default_path=True, enqueue=True, rotation="150 MB"):
