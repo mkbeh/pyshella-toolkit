@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+# Extra funcs.
 function logFileChecker {
     while :
 	file=$(ls /pyshella-toolkit/logs/)
