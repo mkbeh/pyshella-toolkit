@@ -7,6 +7,8 @@ import itertools
 from collections import namedtuple
 from operator import itemgetter
 
+from loguru import logger
+
 from aiobitcoin.grambitcoin import GramBitcoin
 from aiobitcoin.blockchain import Blockchain
 from aiobitcoin import bitcoinerrors
@@ -14,6 +16,9 @@ from aiobitcoin import bitcoinerrors
 from src.extra import utils, toolkitexceptions
 from src.extra.pymongodb import PyMongoDB
 from src.extra.aiomotor import AIOMotor
+
+
+logger_jb = logger.bind(util='jsonrpc-bruter')
 
 
 class BruterBase:
@@ -198,6 +203,7 @@ class EmptyCredentialsChecker(BruterBase):
         else:
             await self._make_record(uri=new_uri, withdrawal=False)
             await self._update_brute_status(uri, True)
+            logger_jb.info(f'Peer {uri} was successfully bruted.')
 
             raise toolkitexceptions.PeerWasBruted
 
@@ -263,6 +269,7 @@ class JSONRPCBruter(EmptyCredentialsChecker):
 
         await self.update_brute_status_handler(brute_data_cp)
 
+    @logger_jb.catch()
     async def run_bruteforce(self):
         while True:
             await self.check_peers_with_empty_creds()

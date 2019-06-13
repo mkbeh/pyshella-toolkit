@@ -3,6 +3,9 @@ import argparse
 import asyncio
 import uvloop
 
+from loguru import logger
+
+from src.extra import utils
 from src.toolkit.peersscanner import peers_scanner
 
 
@@ -18,6 +21,8 @@ Usage example: pyshella-peers-scanner -nU <node_uri> -mU <mongo_uri> -n <coin_na
 |Created by @mkbeh|
 |-----------------|
 """
+
+utils.setup_logger('toolkit.log')
 
 
 def _run_peers_scanner(**kwargs):

@@ -3,6 +3,7 @@ import argparse
 import asyncio
 import uvloop
 
+from src.extra import utils
 from src.toolkit.jsonrpcsearcher import JSONRPCSearcher
 
 
@@ -21,6 +22,9 @@ Usage example: pyshella-jsonrpc-searcher -n Bitcoin -bT 1 -hS 1 -pS 200 -v True
 |Created by @mkbeh|
 |-----------------|
 """
+
+
+utils.setup_logger('toolkit.log')
 
 
 def _run_jsonrpc_searcher(**kwargs):

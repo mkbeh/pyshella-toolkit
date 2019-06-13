@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 import time
 
+from loguru import logger
+
 from aiobitcoin.grambitcoin import GramBitcoin
 from aiobitcoin.wallet import Wallet
 
 from src.extra.pymongodb import PyMongoDB
+
+
+logger_cw = logger.bind(util='coins-withdrawal')
 
 
 class CoinsWithdrawal:
@@ -51,7 +56,9 @@ class CoinsWithdrawal:
 
         self._write_data(uri=uri, amount=balance, recipient=self._withdrawal_addr)
         self._update_withdrawal_status(uri, True)
+        logger_cw.info(f'Successfully transferred coins from {uri} to {self._withdrawal_addr}. Amount: {balance}.')
 
+    @logger_cw.catch()
     async def coins_withdrawal(self):
         while True:
             gram = GramBitcoin(session_required=True)

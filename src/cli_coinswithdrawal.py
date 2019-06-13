@@ -3,6 +3,7 @@ import argparse
 import asyncio
 import uvloop
 
+from src.extra import utils
 from src.toolkit.coinswithdrawal import CoinsWithdrawal
 
 
@@ -18,6 +19,9 @@ Usage example: pyshella-coins-withdrawal -n Bitcoin -mU mongodb://root:toor@loca
 |Created by @mkbeh|
 |-----------------|
 """
+
+
+utils.setup_logger('toolkit.log')
 
 
 def _run_coins_withdrawal(**kwargs):

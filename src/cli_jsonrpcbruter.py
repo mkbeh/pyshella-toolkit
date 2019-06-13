@@ -3,6 +3,7 @@ import argparse
 import asyncio
 import uvloop
 
+from src.extra import utils
 from src.toolkit.jsonrpcbruter import JSONRPCBruter
 
 
@@ -27,6 +28,9 @@ Usage example: pyshella-jsonrpc-bruter -n Bitcoin -t 20 -l <logins_file> -p <pwd
 |Created by @mkbeh|
 |-----------------|
 """
+
+
+utils.setup_logger('toolkit.log')
 
 
 def _run_jsonrpc_bruter(**kwargs):

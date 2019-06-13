@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 import time
 
+from loguru import logger
+
 from aiobitcoin.network import Network
 from aiobitcoin.bitcoinerrors import NoConnectionToTheDaemon
 
-from src.extra import utils
 from src.extra.aiomotor import AIOMotor
 
 
 motor = coin_name = None
-logger = utils.setup_logger(
-    logger_name='scanner',
-    log_file=utils.get_file_path('pyshella-toolkit', 'scanner.log')
-)
+logger_ps = logger.bind(util='peers-scanner')
 
 
 async def _write_peer(**kwargs):
@@ -44,9 +42,10 @@ async def _add_new_peers(uri, ban_time):
             await _write_peer(uri=addr, subver=subver)
             added_peers_num += 1
 
-    logger.info(f'Successfully added {added_peers_num} new peers.')
+    logger_ps.info('Successfully added {added_peers_num} new peers.', added_peers_num=added_peers_num)
 
 
+@logger_ps.catch()
 async def peers_scanner(args):
     global motor, coin_name
     node_uri, ban_time, interval, mongo_uri, coin_name = args.values()
@@ -56,6 +55,6 @@ async def peers_scanner(args):
         try:
             await _add_new_peers(node_uri, ban_time)
         except NoConnectionToTheDaemon:
-            logger.warning('Сonnection to daemon was lost.')
+            logger_ps.warning('Сonnection to daemon was lost.')
         finally:
             time.sleep(interval)

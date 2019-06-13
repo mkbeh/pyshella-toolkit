@@ -4,17 +4,36 @@ import re
 import logging
 import pathlib
 
+from loguru import logger
 
-def setup_logger(logger_name, log_file, level=logging.INFO):
-    logger = logging.getLogger(logger_name)
+
+def get_default_path():
+    cwd = os.getcwd()
+    return cwd.replace(
+        'src', 'logs/'
+    )
+
+
+def setup_logger(file, add_default_path=True, enqueue=True, rotation="150 MB"):
+    if add_default_path:
+        file = os.path.join(get_default_path(), file)
+
+    logger.add(file,
+               format="{time:DD-MM-YYYY-MM-DD at HH:mm:ss} | {level} | {extra[util]} | {message}",
+               enqueue=enqueue,
+               rotation=rotation)
+
+
+def setup_default_logger(logger_name, log_file, level=logging.INFO):
+    default_logger = logging.getLogger(logger_name)
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
     file_handler = logging.FileHandler(log_file)
     file_handler.setFormatter(formatter)
 
-    logger.setLevel(level)
-    logger.addHandler(file_handler)
+    default_logger.setLevel(level)
+    default_logger.addHandler(file_handler)
 
-    return logger
+    return default_logger
 
 
 def make_work_dir(dir_name):

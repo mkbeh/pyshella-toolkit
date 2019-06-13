@@ -4,12 +4,14 @@ import time
 import asyncio
 import urllib.parse
 import itertools
-import logging
+
+from loguru import logger
 
 from src.extra.aiomotor import AIOMotor
 from src.extra import utils
 
 
+logger_js = logger.bind(util='jsonrpc-searcher')
 jsonrpc_errors = [
     '{"jsonrpc": "2.0", "error": {"code": -32700, "message": "invalid JSON"}, "id": null}',
 ]
@@ -117,7 +119,7 @@ class HTTPHeadersGetter:
             return
 
         if self._verbose_mode:
-            logging.info(f'{host}:{port} -> {headers}')
+            logger_js.info(f'{host}:{port} -> {headers}')
 
         for header in headers:
             if re.search(pattern_forbidden_error, header) or '"code": -32700' in jsonrpc_errors:
@@ -125,6 +127,7 @@ class HTTPHeadersGetter:
                 break
             elif re.search(pattern_jsonrpc, header):
                 await self._write_peer_data(peer=host, headers=headers, jsonrpc=port, bruted=False)
+                logger_js.info(f'Found JSONRPC port on {host}:{port} with headers {headers}.')
                 break
 
 
@@ -151,6 +154,7 @@ class JSONRPCSearcher(PeersDataPreparation, HTTPHeadersGetter):
             *(self.find_jsonrpc(host, port) for port in ports)
         )
 
+    @logger_js.catch()
     async def run_jsonrpc_searcher(self):
         while True:
             time.sleep(self._block_timeout)
