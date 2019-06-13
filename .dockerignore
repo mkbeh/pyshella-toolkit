@@ -1,9 +1,9 @@
 venv
-test_data
 secutils
 Dockerfile
 docker-compose.yml
 .*
 *.md
-test.py
-secret.py
+test*
+secret*
+LICENSE
