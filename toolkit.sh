@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-function checker {
+function logFileChecker {
 	while :
 	file=$(ls /pyshella-toolkit/logs/)
 
@@ -32,7 +32,7 @@ if [[ "$ENV" = 'DEBUG' ]]; then
     sed -i 's/.*nodaemon=true.*/nodaemon=false/' /etc/supervisor/conf.d/toolkit.conf
 
     /usr/bin/supervisord
-    checker
+    logFileChecker
 
 else
     echo -e "\e[1;32mRunning Toolkit in BATTLE mode...\e[0m"
