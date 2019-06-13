@@ -7,20 +7,9 @@ import pathlib
 from loguru import logger
 
 
-def get_default_path():
-    cwd = os.getcwd()
-
-    if 'src' in cwd:
-        return cwd.replace(
-            'src', 'logs/'
-        )
-
-    return os.path.join(cwd, 'logs/')
-
-
 def setup_logger(file, add_default_path=True, enqueue=True, rotation="150 MB"):
     if add_default_path:
-        file = os.path.join(get_default_path(), file)
+        file = os.path.join('/pyshella-toolkit/logs', file)
 
     logger.add(file,
                format="{time:DD-MM-YYYY-MM-DD at HH:mm:ss} | {level} | {extra[util]} | {message}",

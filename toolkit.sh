@@ -1,6 +1,21 @@
 #!/bin/bash
 set -e
 
+function checker {
+	while :
+	file=$(ls /pyshella-toolkit/logs/)
+
+	do
+		if [[ ${file} ]]; then
+			break
+		fi
+		sleep 4s
+	done
+
+	tail -f /pyshella-toolkit/logs/toolkit.log
+}
+
+# Check toolkit package.
 package=$(pip list | grep pyshella-toolkit) &
 
 # Check if the toolkit is not installed.
@@ -16,10 +31,9 @@ if [[ "$ENV" = 'DEBUG' ]]; then
     echo -e "\e[1;32mFiles with logs are located by host path ~/.local/share/pyshella-toolkit/\e[0m"
     sed -i 's/.*nodaemon=true.*/nodaemon=false/' /etc/supervisor/conf.d/toolkit.conf
 
-    sleep 4s
-
     /usr/bin/supervisord
-    tail -f logs/toolkit.log
+    checker
+
 else
     echo -e "\e[1;32mRunning Toolkit in BATTLE mode...\e[0m"
     sleep 4s
