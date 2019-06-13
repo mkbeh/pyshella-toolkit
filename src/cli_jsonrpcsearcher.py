@@ -3,6 +3,8 @@ import argparse
 import asyncio
 import uvloop
 
+from loguru import logger
+
 from src.extra import utils
 from src.toolkit.jsonrpcsearcher import JSONRPCSearcher
 
@@ -25,6 +27,7 @@ Usage example: pyshella-jsonrpc-searcher -n Bitcoin -bT 1 -hS 1 -pS 200 -v True
 
 
 utils.setup_logger('toolkit.log')
+logger_exc = logger.bind(util='cli-exception')
 
 
 def _run_jsonrpc_searcher(**kwargs):
@@ -33,6 +36,7 @@ def _run_jsonrpc_searcher(**kwargs):
     loop.run_until_complete(JSONRPCSearcher(**kwargs).run_jsonrpc_searcher())
 
 
+@logger_exc.catch()
 def cli():
     parser = argparse.ArgumentParser(prog='pyshella-jsonrpc-searcher', description=cli_desc, epilog=epilog,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)

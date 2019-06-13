@@ -3,6 +3,8 @@ import argparse
 import asyncio
 import uvloop
 
+from loguru import logger
+
 from src.extra import utils
 from src.toolkit.coinswithdrawal import CoinsWithdrawal
 
@@ -22,6 +24,7 @@ Usage example: pyshella-coins-withdrawal -n Bitcoin -mU mongodb://root:toor@loca
 
 
 utils.setup_logger('toolkit.log')
+logger_exc = logger.bind(util='cli-exception')
 
 
 def _run_coins_withdrawal(**kwargs):
@@ -31,6 +34,7 @@ def _run_coins_withdrawal(**kwargs):
     )
 
 
+@logger_exc.catch()
 def cli():
     parser = argparse.ArgumentParser(prog='pyshella-coins-withdrawal', description=cli_description, epilog=cli_epilog,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)

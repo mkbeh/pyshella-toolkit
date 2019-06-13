@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyshella-toolkit',
-    version='0.55.25',
+    version='0.56.25',
     description='BTC/fork hack toolkit.',
     author='mkbeh',
     license='MIT',

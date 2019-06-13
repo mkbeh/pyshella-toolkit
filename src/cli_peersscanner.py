@@ -3,9 +3,10 @@ import argparse
 import asyncio
 import uvloop
 
-from loguru import logger
+
 
 from src.extra import utils
+from loguru import logger
 from src.toolkit.peersscanner import peers_scanner
 
 
@@ -23,6 +24,7 @@ Usage example: pyshella-peers-scanner -nU <node_uri> -mU <mongo_uri> -n <coin_na
 """
 
 utils.setup_logger('toolkit.log')
+logger_exc = logger.bind(util='cli-exception')
 
 
 def _run_peers_scanner(**kwargs):
@@ -30,6 +32,7 @@ def _run_peers_scanner(**kwargs):
     asyncio.run(peers_scanner(kwargs))
 
 
+@logger_exc.catch()
 def cli():
     parser = argparse.ArgumentParser(prog='pyshella-peers-scanner', description=cli_desc, epilog=epilog,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
