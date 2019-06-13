@@ -19,7 +19,7 @@ if [[ "$ENV" = 'DEBUG' ]]; then
     sleep 4s
 
     /usr/bin/supervisord
-    # Add here tail -f /path/to/log/file
+    tail -f logs/toolkit.log
 else
     echo -e "\e[1;32mRunning Toolkit in BATTLE mode...\e[0m"
     sleep 4s
