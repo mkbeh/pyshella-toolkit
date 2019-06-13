@@ -8,7 +8,7 @@ from src.toolkit.coinswithdrawal import CoinsWithdrawal
 
 cli_description = 'Utility which withdrawal crypto currency from bruted JSON-RPC.'
 cli_interval_help = 'Timeout after coins withdrawal from all the peers that were collected in the database ' \
-                    'at the moment.'
+                    'at the moment. By default 3 min.'
 cli_withdrawal_help = 'The address to which the coins will be sent.'
 cli_epilog = """
 -----------------------------------------------------------------------------------------------------------------------
