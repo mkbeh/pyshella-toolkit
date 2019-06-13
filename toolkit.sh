@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-function logOutput {
-	while :
+function logFileChecker {
+    while :
 	file=$(ls /pyshella-toolkit/logs/)
 
 	do
@@ -11,7 +11,10 @@ function logOutput {
 		fi
 		sleep 4s
 	done
+}
 
+function logOutput {
+	logFileChecker
 	tail -f /pyshella-toolkit/logs/toolkit.log
 }
 
