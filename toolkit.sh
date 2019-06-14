@@ -3,13 +3,13 @@ set -e
 
 # Extra funcs.
 function logFileChecker {
-    while :
-	file=$(ls /pyshella-toolkit/logs/)
+    file=/pyshella-toolkit/logs/toolkit.log
 
+    while :
 	do
-		if [[ ${file} ]]; then
-			break
-		fi
+	    if [[ -f "$file" ]]; then
+            break
+        fi
 		sleep 4s
 	done
 }
