@@ -71,7 +71,7 @@ If your database is on a remote host, then
 option `--network` with value `host` can be omitted.
 ```
 
-`Files with log are located by host path ~/pyshella-toolkit/logs/`
+> File with log are located by host path ~/pyshella-toolkit/logs/
 
 ## Peers Scanner
 The `peers scanner` scans the network for available peers and 
