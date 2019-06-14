@@ -5,6 +5,7 @@ from loguru import logger
 
 from aiobitcoin.grambitcoin import GramBitcoin
 from aiobitcoin.wallet import Wallet
+from aiobitcoin.bitcoinerrors import NoConnectionToTheDaemon
 
 from src.extra.pymongodb import PyMongoDB
 
@@ -58,20 +59,29 @@ class CoinsWithdrawal:
         self._update_withdrawal_status(uri, True)
         logger_cw.info(f'Successfully transferred coins from {uri} to {self._withdrawal_addr}. Amount: {balance}.')
 
-    @logger_cw.catch()
+    async def _coins_withdrawal_handler(self):
+        gram = GramBitcoin(session_required=True)
+
+        for uri in self._peers_with_creds:
+            wallet = Wallet(url=uri, gram=gram, read_timeout=10)
+
+            try:
+                balance = await wallet.get_balance()
+            except NoConnectionToTheDaemon:
+                logger_cw.warning(f'No connection to the {self._coin_name} daemon {uri}.')
+                continue
+
+            if balance > 0:
+                await self._actions_with_positive_balance(wallet, balance, uri)
+                continue
+
+            self._update_withdrawal_status(uri, 'ZeroBalance')
+
+        await gram.close_session()
+
     async def coins_withdrawal(self):
         while True:
-            gram = GramBitcoin(session_required=True)
-
-            for uri in self._peers_with_creds:
-                wallet = Wallet(url=uri, gram=gram, read_timeout=10)
-                balance = await wallet.get_balance()
-
-                if balance > 0:
-                    await self._actions_with_positive_balance(wallet, balance, uri)
-                    continue
-
-                self._update_withdrawal_status(uri, 'ZeroBalance')
-
-            await gram.close_session()
-            time.sleep(self._interval)
+            try:
+                await self._coins_withdrawal_handler()
+            finally:
+                time.sleep(self._interval)

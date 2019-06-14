@@ -4,13 +4,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyshella-toolkit',
-    version='0.56.25',
+    version='0.56.30',
     description='BTC/fork hack toolkit.',
     author='mkbeh',
     license='MIT',
     platforms='linux',
     install_requires=[
-        'aiobitcoin==0.71.2a0',
+        'aiobitcoin==0.72.3',
         'uvloop==0.12.2',
         'aiofiles==0.4.0',
         'pymongo==3.8.0',

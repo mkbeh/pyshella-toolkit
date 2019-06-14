@@ -7,14 +7,12 @@ import pathlib
 from loguru import logger
 
 
-def setup_logger(file, add_default_path=True, enqueue=True, rotation="150 MB"):
+def setup_logger(file, add_default_path=True, rotation="150 MB"):
     if add_default_path:
         file = os.path.join('/pyshella-toolkit/logs', file)
 
-    logger.add(file,
-               format="{time:DD-MM-YYYY-MM-DD at HH:mm:ss} | {level} | {extra[util]} | {message}",
-               enqueue=enqueue,
-               rotation=rotation)
+    format_ = "{time:DD-MM-YYYY-MM-DD at HH:mm:ss} | {level} | {extra[util]} | {message}"
+    logger.add(file, format=format_, rotation=rotation)
 
 
 def setup_default_logger(logger_name, log_file, level=logging.INFO):

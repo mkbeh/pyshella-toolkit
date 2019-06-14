@@ -269,7 +269,6 @@ class JSONRPCBruter(EmptyCredentialsChecker):
 
         await self.update_brute_status_handler(brute_data_cp)
 
-    @logger_jb.catch()
     async def run_bruteforce(self):
         while True:
             await self.check_peers_with_empty_creds()

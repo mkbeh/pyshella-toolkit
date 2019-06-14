@@ -154,7 +154,6 @@ class JSONRPCSearcher(PeersDataPreparation, HTTPHeadersGetter):
             *(self.find_jsonrpc(host, port) for port in ports)
         )
 
-    @logger_js.catch()
     async def run_jsonrpc_searcher(self):
         while True:
             time.sleep(self._block_timeout)

@@ -45,7 +45,6 @@ async def _add_new_peers(uri, ban_time):
     logger_ps.info('Successfully added {added_peers_num} new peers.', added_peers_num=added_peers_num)
 
 
-@logger_ps.catch()
 async def peers_scanner(args):
     global motor, coin_name
     node_uri, ban_time, interval, mongo_uri, coin_name = args.values()
@@ -55,6 +54,6 @@ async def peers_scanner(args):
         try:
             await _add_new_peers(node_uri, ban_time)
         except NoConnectionToTheDaemon:
-            logger_ps.warning('Сonnection to daemon was lost.')
+            logger_ps.warning(f'No connection to the {coin_name} daemon {node_uri}.')
         finally:
             time.sleep(interval)
