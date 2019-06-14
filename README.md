@@ -37,7 +37,41 @@ export PYTHONPATH=~/.local/lib/python3.7/site-packages
 ```
 
 ## Docker supporting
-[TO DO]
+```bash
+git clone https://github.com/mkbeh/pyshella-toolkit
+cd pyshella-toolkit/
+chmod +x toolkit.sh
+mkdir -p ~/pyshella-toolkit
+
+# Set your data to the sections `program` in `toolkit.conf`. 
+vi toolkit.conf
+
+# Next build docker container.
+docker build -t pyshella-toolkit:0.56.30 .
+```
+
+Two modes are available to launch the container:
+* **DEBUG** - the running container will output data 
+from the log file in real time for all utilities from 
+the toolkit with errors and success data.
+* **BATTLE** - without output data from the log file
+in real time.
+
+```bash
+# -- Docker run examples for each supporting mode --
+
+# -- DEBUG:
+docker run -v ~/pyshella-toolkit:/pyshella-toolkit/logs -e "ENV=DEBUG" --network host pyshella-toolkit:0.56.30
+
+# -- BATTLE:
+docker run -v ~/pyshella-toolkit:/pyshella-toolkit/logs -e "ENV=BATTLE" --network host pyshella-toolkit:0.56.30
+
+# -- NOTE --
+If your database is on a remote host, then 
+option `--network` with value `host` can be omitted.
+```
+
+`Files with log are located by host path ~/pyshella-toolkit/logs/`
 
 ## Peers Scanner
 The `peers scanner` scans the network for available peers and 
