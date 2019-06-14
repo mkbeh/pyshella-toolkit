@@ -46,7 +46,7 @@ mkdir -p ~/pyshella-toolkit
 # Set your data to the sections `program` in `toolkit.conf`. 
 vi toolkit.conf
 
-# Next build docker container.
+# Next build docker image.
 docker build -t pyshella-toolkit:0.56.30 .
 ```
 
