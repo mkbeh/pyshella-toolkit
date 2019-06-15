@@ -15,6 +15,7 @@ and withdrawal the coins.
 
 ## **Getting started**
 * [Installation](#installation)
+* [Configuring MongoDB with SSL](#configuring-mongodb-with-ssl)
 * [Docker supporting](#docker-supporting)
 * Toolkit
     * [Peers-scanner](#peers-scanner)
@@ -35,6 +36,79 @@ python3.7 setup.py install --user
 pip3.7 install wheel
 export PYTHONPATH=~/.local/lib/python3.7/site-packages
 ```
+
+## Configuring MongoDB with SSL
+
+### Installing MongoDB
+```bash
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+mkdir -p /data/db
+mkdir ssl
+cd ssl
+
+echo "mongodb-org hold" | sudo dpkg --set-selections
+echo "mongodb-org-server hold" | sudo dpkg --set-selections
+echo "mongodb-org-shell hold" | sudo dpkg --set-selections
+echo "mongodb-org-mongos hold" | sudo dpkg --set-selections
+echo "mongodb-org-tools hold" | sudo dpkg --set-selections
+```
+
+### Enable auth
+```
+# Start MongoDB
+mongod
+
+# Connect to the instance
+mongo
+
+# Use database
+use admin
+
+# Create the user administrator
+db.createUser({user: "admin", pwd: "admin", roles: ["root"]})
+
+# Re-start the MongoDB instance with access control
+db.adminCommand({ shutdown: 1})
+
+# Exit from mongo cli
+exit
+```
+
+### Generate dirty cert
+```
+openssl genrsa -out rootCA.key 2048
+openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.pem
+openssl genrsa -out mongodb.key 2048
+openssl req -new -key mongodb.key -out mongodb.csr
+openssl x509 -req -in mongodb.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out mongodb.crt -days 500 -sha256
+cat mongodb.key mongodb.crt > mongodb.pem
+
+# -- Edit mongod.conf --
+net:
+  port: 20777
+  bindIp: <bind_ip>
+  ssl:
+    mode: requireSSL
+    PEMKeyFile: /root/ssl/mongodb.pem
+    CAFile: /root/ssl/rootCA.pem
+```
+
+### Run mongod
+```bash
+mongod --auth -f /etc/mongod.conf
+mongo --ssl --sslCAFile ssl/rootCA.pem --sslPEMKeyFile ssl/mongodb.pem --host <ip:20777> -u "admin" --authenticationDatabase "admin" -p
+
+```
+
+### Other
+```bash
+# -- Copy require *.pem files from remote host --
+scp root@<remote_ip>:/root/ssl/\{mongodb.pem,rootCA.pem\} .
+```
+
 
 ## Docker supporting
 ```bash
