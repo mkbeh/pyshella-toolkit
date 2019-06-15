@@ -16,6 +16,11 @@ and withdrawal the coins.
 ## **Getting started**
 * [Installation](#installation)
 * [Configuring MongoDB with SSL](#configuring-mongodb-with-ssl)
+    * [Installing](#installing-mongodb)
+    * [Enable auth](#enable-auth)
+    * [Generate dirty cert](#generate-dirty-cert)
+    * [Run](#run-mongod)
+    * [Other](#other)
 * [Docker supporting](#docker-supporting)
 * Toolkit
     * [Peers-scanner](#peers-scanner)
