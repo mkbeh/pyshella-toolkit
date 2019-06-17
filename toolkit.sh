@@ -21,7 +21,7 @@ function logOutput {
 }
 
 function removeSourceCode {
-    rm -rf !("wordlists"|"logs"|"toolkit.sh")
+    rm -rf !("wordlists"|"logs")
 }
 function getLatestPackageInDir {
     local package=$(ls dist/ | sort -V | tail -n 1)
