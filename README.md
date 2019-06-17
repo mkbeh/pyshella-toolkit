@@ -20,7 +20,6 @@ and withdrawal the coins.
     * [Enable auth](#enable-auth)
     * [Generate dirty cert](#generate-dirty-cert)
     * [Run](#run-mongod)
-    * [Other](#other)
 * [Docker supporting](#docker-supporting)
 * Toolkit
     * [Peers-scanner](#peers-scanner)
