@@ -18,7 +18,6 @@ and withdrawal the coins.
 * [Configuring MongoDB](#configuring-mongodb)
     * [Installing](#installing-mongodb)
     * [Enable auth](#enable-auth)
-    * [Generate dirty cert](#generate-dirty-cert)
     * [Run](#run-mongod)
 * [Docker supporting](#docker-supporting)
 * Toolkit
