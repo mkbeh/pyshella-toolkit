@@ -15,7 +15,7 @@ and withdrawal the coins.
 
 ## **Getting started**
 * [Installation](#installation)
-* [Configuring MongoDB with SSL](#configuring-mongodb-with-ssl)
+* [Configuring MongoDB](#configuring-mongodb)
     * [Installing](#installing-mongodb)
     * [Enable auth](#enable-auth)
     * [Generate dirty cert](#generate-dirty-cert)
@@ -42,7 +42,7 @@ pip3.7 install wheel
 export PYTHONPATH=~/.local/lib/python3.7/site-packages
 ```
 
-## Configuring MongoDB with SSL
+## Configuring MongoDB
 ```
 IMPORTANT NOTE:
 Do not use SSL supporting from this guide, it is not correct.
@@ -55,8 +55,6 @@ echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/
 sudo apt-get update
 sudo apt-get install -y mongodb-org
 mkdir -p /data/db
-mkdir ssl
-cd ssl
 
 echo "mongodb-org hold" | sudo dpkg --set-selections
 echo "mongodb-org-server hold" | sudo dpkg --set-selections
@@ -86,29 +84,10 @@ db.adminCommand({ shutdown: 1})
 exit
 ```
 
-### Generate dirty cert
-```
-openssl genrsa -out rootCA.key 2048
-openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.pem
-openssl genrsa -out mongodb.key 2048
-openssl req -new -key mongodb.key -out mongodb.csr
-openssl x509 -req -in mongodb.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out mongodb.crt -days 500 -sha256
-cat mongodb.key mongodb.crt > mongodb.pem
-
-# -- Edit mongod.conf --
-net:
-  port: 20777
-  bindIp: <bind_ip>
-  ssl:
-    mode: requireSSL
-    PEMKeyFile: /root/ssl/mongodb.pem
-    CAFile: /root/ssl/rootCA.pem
-```
-
 ### Run mongod
 ```bash
 mongod --auth -f /etc/mongod.conf
-mongo --ssl --sslCAFile ssl/rootCA.pem --sslPEMKeyFile ssl/mongodb.pem --host <ip:20777> -u "admin" --authenticationDatabase "admin" -p
+mongo --host <ip:20777> -u "admin" --authenticationDatabase "admin" -p
 
 ```
 
