@@ -7,9 +7,18 @@ import pathlib
 from loguru import logger
 
 
+def get_log_file(file_name):
+    if os.environ.get('USER') == 'root':
+        return os.path.join('/pyshella-toolkit/logs', file_name)
+
+    return os.path.join(
+        os.getenv('XDG_DATA_HOME', os.path.expanduser("~/.local/share")), f'pyshella-toolkit/logs/{file_name}'
+)
+
+
 def setup_logger(file, add_default_path=True, rotation="150 MB"):
     if add_default_path:
-        file = os.path.join('/pyshella-toolkit/logs', file)
+        file = get_log_file(file_name=file)
 
     format_ = "{time:DD-MM-YYYY-MM-DD at HH:mm:ss} | {level} | {extra[util]} | {message}"
     logger.add(file, format=format_, rotation=rotation)

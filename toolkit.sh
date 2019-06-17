@@ -33,7 +33,7 @@ function installToolkit {
     package=$(getLatestPackageInDir)
     python3.7 -m easy_install --install-dir /usr/local/lib/python3.7/site-packages/ --prefix=$HOME/.local dist/${package}
 
-    echo -e "\e[1;32mRemoving source code...\e[0m"
+    echo -e "\e[1;32mRemoving source code from container...\e[0m"
     sleep 2s
     removeSourceCode
 }
@@ -44,7 +44,7 @@ package=$(pip list | grep pyshella-toolkit) &
 if ! [[ ${package} ]]; then
     echo -e "\e[1;32mToolkit is not installed...\e[0m"
     echo -e "\e[1;32mRunning code obfuscation and installing toolkit...\e[0m"
-    sleep 4s
+    sleep 5s
 
     installToolkit
 fi
