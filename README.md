@@ -87,13 +87,6 @@ mongo --host <ip:20777> -u "admin" --authenticationDatabase "admin" -p
 
 ```
 
-### Other
-```bash
-# -- Copy require *.pem files from remote host --
-scp root@<remote_ip>:/root/ssl/\{mongodb.pem,rootCA.pem\} .
-```
-
-
 ## Docker supporting
 ```bash
 git clone https://github.com/mkbeh/pyshella-toolkit
