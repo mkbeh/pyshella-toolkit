@@ -3,12 +3,13 @@ set -e
 shopt -s extglob
 
 # Extra funcs.
-function logFileChecker {
-    file=/pyshella-toolkit/logs/toolkit.log
+log=/pyshella-toolkit/logs/toolkit.log
+install_pkg_dir=/usr/local/lib/python3.7/site-packages/
 
+function logFileChecker {
     while :
 	do
-	    if [[ -f "$file" ]]; then
+	    if [[ -f "$log" ]]; then
             break
         fi
 		sleep 4s
@@ -17,7 +18,7 @@ function logFileChecker {
 
 function logOutput {
 	logFileChecker
-	tail -f /pyshella-toolkit/logs/toolkit.log
+	tail -f ${log}
 }
 
 function removeSourceCode {
@@ -31,7 +32,7 @@ function getLatestPackageInDir {
 function installToolkit {
     python3.7 setup.py bdist_egg --exclude-source-files
     package=$(getLatestPackageInDir)
-    python3.7 -m easy_install --install-dir /usr/local/lib/python3.7/site-packages/ --prefix=$HOME/.local dist/${package}
+    python3.7 -m easy_install --install-dir ${install_pkg_dir} --prefix=$HOME/.local dist/${package}
 
     echo -e "\e[1;32mRemoving source code from container...\e[0m"
     sleep 2s
