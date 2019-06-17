@@ -112,10 +112,10 @@ in real time.
 # -- Docker run examples for each supporting mode --
 
 # -- DEBUG:
-docker run -v ~/pyshella-toolkit:/pyshella-toolkit/logs -e "ENV=DEBUG" --network host pyshella-toolkit:0.56.30
+docker run --name <coin_name> -v ~/pyshella-toolkit:/pyshella-toolkit/logs -e "ENV=DEBUG" --network host pyshella-toolkit:0.56.30
 
 # -- BATTLE:
-docker run -v ~/pyshella-toolkit:/pyshella-toolkit/logs -e "ENV=BATTLE" --network host pyshella-toolkit:0.56.30
+docker run --name <coin_name> -v ~/pyshella-toolkit:/pyshella-toolkit/logs -e "ENV=BATTLE" --network host pyshella-toolkit:0.56.30
 
 # -- NOTE --
 If your database is on a remote host, then 
