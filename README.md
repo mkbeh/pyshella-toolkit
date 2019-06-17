@@ -43,10 +43,6 @@ export PYTHONPATH=~/.local/lib/python3.7/site-packages
 ```
 
 ## Configuring MongoDB
-```
-IMPORTANT NOTE:
-Do not use SSL supporting from this guide, it is not correct.
-```
 
 ### Installing MongoDB
 ```bash
