@@ -52,14 +52,15 @@ class CredsCrawler(scrapy.Spider):
             cred[0].split('=')[1] for cred in args
         ]
 
-    def _write_creds(self, raw_rpcuser, raw_rpcpwd):
+    def _write_creds(self, raw_rpcuser, raw_rpcpwd, topic):
         rpcuser, rpcpwd = self._prepare_creds(raw_rpcuser, raw_rpcpwd)
 
-        with open('default_rpcusers.lst', 'a') as ru, open('default_rpcpasswords.lst', 'a') as rp:
+        with open(self._rpcusers_file, 'a') as ru, open(self._rpcpasswords_file, 'a') as rp:
             ru.write(f'{rpcuser}\n')
             rp.write(f'{rpcpwd}\n')
 
-        logger.debug(f'Found next credentials: RPCUSER={rpcuser} RPCPASSWORD={rpcpwd}.')
+        logger.debug(f'Found next credentials: RPCUSER={rpcuser} RPCPASSWORD={rpcpwd} '
+                     f'in topic {topic}.')
 
     def _search_creds(self, response):
         body = response.xpath('//body').get()
@@ -67,7 +68,7 @@ class CredsCrawler(scrapy.Spider):
         rpcpwd = re.findall(self._rpcpwd_pattern, body)
 
         if rpcuser and rpcpwd:
-            self._write_creds(rpcuser, rpcpwd)
+            self._write_creds(rpcuser, rpcpwd, response.url)
 
     def _get_topic_urls(self, response):
         required_table_num = 8 if self._iter_count == 0 else 7
