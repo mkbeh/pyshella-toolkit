@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+import os
 import sys
 import re
+import time
+
 import scrapy
 
 from loguru import logger
@@ -9,10 +12,30 @@ from loguru import logger
 logger.add(sys.stdout, format="{time:DD-MM-YYYY-MM-DD at HH:mm:ss} | {message}", level='INFO')
 
 
+def get_work_dir():
+    return os.path.join(
+        os.getenv('XDG_DATA_HOME', os.path.expanduser("~/.local/share")), 'wordlists'
+    )
+
+
+def get_paths(workdir, *args):
+    return (
+        os.path.join(workdir, arg) for arg in args
+    )
+
+
+def get_credentials_files():
+    if os.environ.get('USER') == 'root':
+        return get_paths('/pyshella-toolkit/wordlists', 'pyshella-rpcusers.lst', 'pyshella-rpcpasswords.lst')
+
+    return get_paths(get_work_dir(), 'pyshella-rpcusers.lst', 'pyshella-rpcpasswords.lst')
+
+
 class CredsCrawler(scrapy.Spider):
     _rpcuser_pattern = re.compile(r'(rpcuser=.+?)<br>')
     _rpcpwd_pattern = re.compile(r'(rpcpassword=.+?)<br>')
 
+    _rpcusers_file, _rpcpasswords_file = get_credentials_files()
     _iter_count = 0
     _page_num = 0
     _next_page_url_pattern = 'https://bitcointalk.org/index.php?board=159.{}'
@@ -57,8 +80,13 @@ class CredsCrawler(scrapy.Spider):
         self._last_page_num = \
             int(response.xpath('//table')[9].xpath('//a/@href')[-13].extract().split('.')[-1])
 
+    def _help_msg(self):
+        logger.debug(f'Wordlists files are located: {self._rpcusers_file} | {self._rpcpasswords_file}')
+        time.sleep(5)
+
     def parse(self, response):
         if not self._last_page_num:
+            self._help_msg()
             self._set_last_page_num(response)
 
         for url in self._get_topic_urls(response):
