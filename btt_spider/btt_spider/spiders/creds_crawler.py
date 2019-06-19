@@ -9,9 +9,6 @@ import scrapy
 from loguru import logger
 
 
-logger.add(sys.stdout, format="{time:DD-MM-YYYY-MM-DD at HH:mm:ss} | {message}", level='INFO')
-
-
 def get_work_dir():
     return os.path.join(
         os.getenv('XDG_DATA_HOME', os.path.expanduser("~/.local/share")), 'wordlists'
@@ -32,6 +29,8 @@ def get_credentials_files():
 
 
 class CredsCrawler(scrapy.Spider):
+    logger.add(sys.stdout, format="{time:DD-MM-YYYY-MM-DD at HH:mm:ss} | {message}", level='INFO')
+
     _rpcuser_pattern = re.compile(r'(rpcuser=.+?)<br>')
     _rpcpwd_pattern = re.compile(r'(rpcpassword=.+?)<br>')
 
@@ -60,7 +59,7 @@ class CredsCrawler(scrapy.Spider):
             rp.write(f'{rpcpwd}\n')
 
         logger.debug(f'Found next credentials: RPCUSER={rpcuser} RPCPASSWORD={rpcpwd} '
-                     f'in topic {topic}.')
+                     f'in topic: {topic}.')
 
     def _search_creds(self, response):
         body = response.xpath('//body').get()
