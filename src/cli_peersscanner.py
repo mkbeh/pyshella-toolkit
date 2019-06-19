@@ -3,8 +3,6 @@ import argparse
 import asyncio
 import uvloop
 
-
-
 from src.extra import utils
 from loguru import logger
 from src.toolkit.peersscanner import peers_scanner

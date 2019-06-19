@@ -32,6 +32,12 @@
       <w>pymongo</w>
       <w>pyshella</w>
       <w>pythonpath</w>
+      <w>rpcpassword</w>
+      <w>rpcpasswords</w>
+      <w>rpcpwd</w>
+      <w>rpcpwds</w>
+      <w>rpcuser</w>
+      <w>rpcusers</w>
       <w>secutils</w>
       <w>subver</w>
       <w>supervisord</w>

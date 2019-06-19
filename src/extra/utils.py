@@ -13,7 +13,7 @@ def get_log_file(file_name):
 
     return os.path.join(
         os.getenv('XDG_DATA_HOME', os.path.expanduser("~/.local/share")), f'pyshella-toolkit/logs/{file_name}'
-)
+    )
 
 
 def setup_logger(file, add_default_path=True, rotation="150 MB"):
