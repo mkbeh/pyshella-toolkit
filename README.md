@@ -30,13 +30,14 @@ and withdrawal the coins.
 
 ## Installation
 ```bash
+mkdir -p ~/pyshella-toolkit/wordlists && mkdir ~/pyshella-toolkit/logs
 git clone https://github.com/mkbeh/pyshella-toolkit
 cd pyshella-toolkit/
 pip3.7 install wheel
-python3.7 setup.py install --user
+python3.7 setup.py bdist_egg --exclude-source-files
+python3.7 -m easy_install --install-dir ~/.local/lib/python3.7/site-packages --prefix=$HOME/.local dist/<package>
 
-# NOTE: if error - try previously 
-pip3.7 install wheel
+# NOTE: if error - try previously (setup yours path)
 export PYTHONPATH=~/.local/lib/python3.7/site-packages
 ```
 
@@ -110,10 +111,14 @@ in real time.
 # -- Docker run examples for each supporting mode --
 
 # -- DEBUG:
-docker run --name <coin_name> -v ~/pyshella-toolkit:/pyshella-toolkit/logs -e "ENV=DEBUG" --network host pyshella-toolkit:0.56.30
+docker run --name <coin_name> -v ~/pyshella-toolkit:/pyshella-toolkit -e "ENV=DEBUG" --network host pyshella-toolkit:<version>
 
 # -- BATTLE:
-docker run --name <coin_name> -v ~/pyshella-toolkit:/pyshella-toolkit/logs -e "ENV=BATTLE" --network host pyshella-toolkit:0.56.30
+docker run --name <coin_name> -v ~/pyshella-toolkit:/pyshella-toolkit -e "ENV=BATTLE" --network host pyshella-toolkit:<version>
+
+# EDIT THIS
+docker run -v ~/pyshella-toolkit:/pyshella-toolkit/shared -e "ENV=DEBUG" -e "CRAWLER=ACTIVATE" --network host pyshella-toolkit:<version>
+
 
 # -- NOTE --
 If your database is on a remote host, then 

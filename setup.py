@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyshella-toolkit',
-    version='0.56.33',
+    version='0.56.37',
     description='Hacking toolkit for BTC/forks peers.',
     author='mkbeh',
     license='MIT',
@@ -16,7 +16,6 @@ setup(
         'pymongo==3.8.0',
         'motor==2.0.0',
         'loguru==0.2.5',
-        'scrapy==1.6.0'
     ],
     packages=find_packages(),
     entry_points={

@@ -3,16 +3,13 @@ import os
 import sys
 import re
 import time
+import getpass
 
 import scrapy
 
 from loguru import logger
 
-
-def get_work_dir():
-    return os.path.join(
-        os.getenv('XDG_DATA_HOME', os.path.expanduser("~/.local/share")), 'wordlists'
-    )
+from src.extra import utils
 
 
 def get_paths(workdir, *args):
@@ -22,10 +19,12 @@ def get_paths(workdir, *args):
 
 
 def get_credentials_files():
-    if os.environ.get('USER') == 'root':
-        return get_paths('/pyshella-toolkit/wordlists', 'pyshella-rpcusers.lst', 'pyshella-rpcpasswords.lst')
+    if getpass.getuser() == 'root':
+        return get_paths('/pyshella-toolkit/shared/wordlists',
+                         'pyshella-rpcusers.lst',
+                         'pyshella-rpcpasswords.lst')
 
-    return get_paths(get_work_dir(), 'pyshella-rpcusers.lst', 'pyshella-rpcpasswords.lst')
+    return get_paths(utils.get_work_dir('wordlists'), 'pyshella-rpcusers.lst', 'pyshella-rpcpasswords.lst')
 
 
 class CredsCrawler(scrapy.Spider):

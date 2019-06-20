@@ -7,12 +7,23 @@ import pathlib
 from loguru import logger
 
 
+def get_work_dir(workdir_name):
+    workdir = os.path.join(
+        os.getenv('XDG_DATA_HOME', os.path.expanduser("~/pyshella-toolkit")), workdir_name
+    )
+
+    if not os.path.exists(workdir):
+        os.makedirs(workdir)
+
+    return workdir
+
+
 def get_log_file(file_name):
     if os.environ.get('USER') == 'root':
-        return os.path.join('/pyshella-toolkit/logs', file_name)
+        return os.path.join('/pyshella-toolkit/shared/logs', file_name)
 
     return os.path.join(
-        os.getenv('XDG_DATA_HOME', os.path.expanduser("~/.local/share")), f'pyshella-toolkit/logs/{file_name}'
+        get_work_dir('logs'), file_name
     )
 
 
