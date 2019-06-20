@@ -7,6 +7,7 @@
       <w>asyncio</w>
       <w>bitcoin</w>
       <w>bitcoinrpc</w>
+      <w>bitcointalk</w>
       <w>blockchain</w>
       <w>bruted</w>
       <w>bruteforce</w>
@@ -38,6 +39,7 @@
       <w>rpcpwds</w>
       <w>rpcuser</w>
       <w>rpcusers</w>
+      <w>scrapy</w>
       <w>secutils</w>
       <w>subver</w>
       <w>supervisord</w>

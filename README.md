@@ -122,6 +122,22 @@ option `--network` with value `host` can be omitted.
 
 > File with log are located by host path ~/pyshella-toolkit/logs/
 
+## Bitcointalk default credentials crawler
+Crawler which searching default rpc credentials in
+each topic of section ANN.
+
+```
+Important note: This process may take more than a few 
+hours, please be patient. 
+```
+
+### How to use
+```bash
+cd btt_spider
+scrapy crawl creds_crawler
+```
+
+
 ## Peers Scanner
 The `peers scanner` scans the network for available peers and 
 writes them to a file. For new peers, old ones are blacklisted.
