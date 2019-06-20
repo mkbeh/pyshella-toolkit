@@ -46,9 +46,13 @@ class CredsCrawler(scrapy.Spider):
     ]
 
     @staticmethod
-    def _prepare_creds(*args):
+    def _clear_str(s):
+        return re.sub('[&lt;&gt;]', '', s)
+
+    def _prepare_creds(self, *args):
         return [
-            cred[0].split('=')[1] for cred in args
+            self._clear_str(cred[0].split('=')[1])
+            for cred in args
         ]
 
     def _write_creds(self, raw_rpcuser, raw_rpcpwd, topic):
