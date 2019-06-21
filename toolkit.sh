@@ -6,6 +6,7 @@ echo "export PYTHONPATH=/pyshella-toolkit" >> ~/.bashrc && . ~/.bashrc
 # Extra funcs.
 log=/pyshella-toolkit/logs/toolkit.log
 install_pkg_dir=/usr/local/lib/python3.7/site-packages/
+wordlistsDir = /pyshella-toolkit/share/wordlists
 
 function logFileChecker {
     while :
@@ -22,6 +23,20 @@ function logOutput {
 	tail -f ${log}
 }
 
+function wordlistsChecker {
+    if ! [[ -n "$(ls -A ${wordlistsDir})" ]]; then
+	    echo -e "\e[1;32m:> No dictionary files added to the" \
+	     "directory ~/pyshella-toolkit/shared/wordlists on the host...\e[0m"
+	    exit 1
+    fi
+}
+function makeWordlistsUnique {
+    for file in $(find share/wordlists/ -name "*.*")
+    do
+	    sort -u -o ${file} ${file}
+    done
+
+}
 function removeSourceCode {
     rm -rf !("shared"|"btt_spider")
 }
@@ -63,9 +78,10 @@ if [[ "$CRAWLER" = 'ACTIVATE' ]]; then
     python3.7 -m pip install loguru      # ONLY FOR TEST // REMOVE IT LATER
 
     echo -e "\e[1;32m:> Running parsing credentials from bitcointalk.org of ANN section....\e[0m" && sleep 5s
-    cd btt_spider && scrapy crawl creds_crawler
+    cd btt_spider && scrapy crawl creds_crawler && makeWordlistsUnique
 else
     echo -e "\e[1;32m:> Crawler not activated...\e[0m"
+    wordlistsChecker
     echo -e "\e[1;32m:> Using wordlists that defined in toolkit.conf...\e[0m"
 fi
 
