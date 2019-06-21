@@ -96,16 +96,31 @@ mkdir -p ~/pyshella-toolkit
 # Set your data to the sections `program` in `toolkit.conf`. 
 vi toolkit.conf
 
+        --- IMPORTANT NOTE ---
+# if you do not want to run a spider - 
+# add your dictionaries to the directory 
+# ~/pyshella-toolkit/wordlists on host. 
+# This directory is shared between the host 
+# and the container.
+
 # Next build docker image.
 docker build -t pyshella-toolkit:0.56.30 .
 ```
 
-Two modes are available to launch the container:
+**Available modes to launch the container:**
 * **DEBUG** - the running container will output data 
 from the log file in real time for all utilities from 
 the toolkit with errors and success data.
 * **BATTLE** - without output data from the log file
 in real time.
+
+**Crawler modes:**
+* **ACTIVATE** - will activate crawler , which will
+crawl bitcointalk.org ANN section for searching default
+credentials , then created 2 files with RPC users and 
+RPC passwords.
+* **INACTIVATE** - will use dictionaries from 
+`toolkit.conf`.
 
 ```bash
 # -- Docker run examples for each supporting mode --
