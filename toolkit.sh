@@ -6,7 +6,7 @@ echo "export PYTHONPATH=/pyshella-toolkit" >> ~/.bashrc && . ~/.bashrc
 # Extra funcs.
 log=/pyshella-toolkit/logs/toolkit.log
 install_pkg_dir=/usr/local/lib/python3.7/site-packages/
-wordlistsDir = /pyshella-toolkit/share/wordlists
+wordlistsDir=/pyshella-toolkit/share/wordlists
 
 function logFileChecker {
     while :
