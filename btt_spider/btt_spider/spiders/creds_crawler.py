@@ -111,13 +111,10 @@ class CredsCrawler(scrapy.Spider):
             self._help_msg()
             self._set_last_page_num(response)
 
-        urls = [response.url]
-
         for url in self._get_topics_urls(response):
-            next_url = response.urljoin(url)
-            next_resp = yield scrapy.Request(next_url)
+            topic_url = response.urljoin(url)
+            next_resp = yield scrapy.Request(topic_url, dont_filter=True)
             self._search_creds(next_resp)
-            urls.append(next_resp.url)
 
         self._page_num += 40
 
