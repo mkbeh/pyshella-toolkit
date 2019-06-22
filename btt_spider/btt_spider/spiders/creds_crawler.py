@@ -4,6 +4,7 @@ import sys
 import re
 import time
 import getpass
+import warnings
 
 import scrapy
 
@@ -11,6 +12,9 @@ from inline_requests import inline_requests
 from loguru import logger
 
 from src.extra import utils
+
+
+warnings.filterwarnings("ignore")
 
 
 def get_paths(workdir, *args):
@@ -47,7 +51,20 @@ class CredsCrawler(scrapy.Spider):
 
     @staticmethod
     def _clear_str(s):
-        return re.sub('[&lt;&gt;]', '', s)
+        pattern = re.compile(r'</?\w+>?')
+        pattern1 = re.compile(r'\xa0')
+        pattern2 = re.compile(r'[&lt;&gt;]')
+
+        patterns = (pattern, pattern1, pattern2)
+
+        if len(s) < 4 or '.conf' in s:
+            return 'dirty_data'
+
+        for pattern in patterns:
+            s = re.sub(pattern, '', s)
+
+        s = s.split(' ')
+        return s[0] if len(s[0]) > 4 else 'dirty_data'
 
     def _prepare_creds(self, *args):
         return [
