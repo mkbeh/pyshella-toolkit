@@ -7,6 +7,7 @@ import getpass
 
 import scrapy
 
+from inline_requests import inline_requests
 from loguru import logger
 
 from src.extra import utils
@@ -72,7 +73,7 @@ class CredsCrawler(scrapy.Spider):
         if rpcuser and rpcpwd:
             self._write_creds(rpcuser, rpcpwd, response.url)
 
-    def _get_topic_urls(self, response):
+    def _get_topics_urls(self, response):
         required_table_num = 8 if self._iter_count == 0 else 7
         self._iter_count += 1
         href_xpath = 'td[position() = 3]/span/a/@href'
@@ -87,15 +88,22 @@ class CredsCrawler(scrapy.Spider):
         logger.debug(f'Wordlists files are located: {self._rpcusers_file} | {self._rpcpasswords_file}')
         time.sleep(5)
 
+    @inline_requests
     def parse(self, response):
         if not self._last_page_num:
             self._help_msg()
             self._set_last_page_num(response)
 
-        for url in self._get_topic_urls(response):
-            yield scrapy.Request(url, callback=self._search_creds)
+        urls = [response.url]
+
+        for url in self._get_topics_urls(response):
+            next_url = response.urljoin(url)
+            next_resp = yield scrapy.Request(next_url)
+            self._search_creds(next_resp)
+            urls.append(next_resp.url)
 
         self._page_num += 40
 
         if self._page_num <= self._last_page_num:
-            yield scrapy.Request(self._next_page_url_pattern.format(self._page_num), callback=self.parse)
+            next_page = self._next_page_url_pattern.format(self._page_num)
+            yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
