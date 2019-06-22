@@ -43,7 +43,7 @@ function removeSourceCode {
 
 function installScrapy {
     if [[ "$CRAWLER" = 'ACTIVATE' ]]; then
-        python3.7 -m pip install scrapy
+        python3.7 -m pip install scrapy scrapy-inline-requests
     fi
 }
 
