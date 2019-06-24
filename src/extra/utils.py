@@ -85,7 +85,7 @@ def clear_string(s):
 
 
 def del_spec_chars_from_strings(*args):
-    pattern = re.compile(r'[#!"\'/?]')
+    pattern = re.compile(r'[#/?[\]]')
     result = []
 
     for arg in args:
