@@ -9,6 +9,8 @@ from operator import itemgetter
 
 from loguru import logger
 
+from aiohttp.client_exceptions import ClientOSError
+
 from aiobitcoin.grambitcoin import GramBitcoin
 from aiobitcoin.blockchain import Blockchain
 from aiobitcoin import bitcoinerrors
@@ -200,6 +202,8 @@ class EmptyCredentialsChecker(BruterBase):
         except asyncio.futures.TimeoutError:
             await self._update_brute_status(uri, 'TimeoutError')
             raise
+        except ClientOSError:
+            logger_jb.info(f'Too many threads to {uri}, decrease number of threads.')
         else:
             await self._make_record(uri=new_uri, withdrawal=False)
             await self._update_brute_status(uri, True)
