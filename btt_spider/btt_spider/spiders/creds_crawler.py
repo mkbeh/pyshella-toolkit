@@ -56,7 +56,7 @@ class CredsCrawler(scrapy.Spider):
         pattern2 = re.compile(r'[&lt;&gt;]')
         pattern3 = re.compile(r'[#/?[\]]')
 
-        patterns = (pattern, pattern1, pattern2)
+        patterns = (pattern, pattern1, pattern2, pattern3)
 
         if len(s) < 4 or '.conf' in s:
             return 'dirty_data'
@@ -65,7 +65,7 @@ class CredsCrawler(scrapy.Spider):
             s = re.sub(pattern, '', s)
 
         s = s.split(' ')
-        return s[0] if len(s[0]) > 4 and re.search(pattern3, s[0]) is None else 'dirty_data'
+        return s[0] if len(s[0]) > 4 else 'dirty_data'
 
     def _prepare_creds(self, *args):
         return [
