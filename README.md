@@ -137,7 +137,7 @@ RPC passwords.
 docker run --name <coin_name> -v ~/pyshella-toolkit:/pyshella-toolkit -e "ENV=DEBUG" --network host pyshella-toolkit:<version>
 
 # -- BATTLE:
-docker run --name <coin_name> -v ~/pyshella-toolkit:/pyshella-toolkit -e "ENV=BATTLE" --network host pyshella-toolkit:<version>
+docker run -itd --name <coin_name> -v ~/pyshella-toolkit:/pyshella-toolkit -e "ENV=BATTLE" --network host pyshella-toolkit:<version>
 
 # EDIT THIS
 docker run -v ~/pyshella-toolkit:/pyshella-toolkit/shared -e "ENV=DEBUG" -e "CRAWLER=ACTIVATE" --network host pyshella-toolkit:<version>
