@@ -270,6 +270,7 @@ class JSONRPCBruter(EmptyCredentialsChecker):
 
         for *args, rng in brute_data:
             await self._bruteforce_handler(args, rng=rng, grams=grams)
+            time.sleep(.1)
 
         await self.update_brute_status_handler(brute_data_cp)
 
@@ -287,3 +288,4 @@ class JSONRPCBruter(EmptyCredentialsChecker):
             finally:
                 await self.close_gram_sessions(grams)
                 time.sleep(self._cycle_timeout)
+# впилить таймаут между запросами
