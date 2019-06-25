@@ -288,4 +288,3 @@ class JSONRPCBruter(EmptyCredentialsChecker):
             finally:
                 await self.close_gram_sessions(grams)
                 time.sleep(self._cycle_timeout)
-# впилить таймаут между запросами
