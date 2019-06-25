@@ -86,7 +86,10 @@ exit
 
 ### Run mongod
 ```bash
+# -- Run mongo daemon --
 mongod --auth -f /etc/mongod.conf
+
+# -- Check connection --
 mongo --host <ip:20777> -u "admin" --authenticationDatabase "admin" -p
 
 ```
