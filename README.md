@@ -12,6 +12,12 @@ This set of scripts allows you to find peers with the JSON-RPC
 port open to the outside, followed by a bruteforce attack
 and withdrawal the coins.
 
+```
+Disclaimer: This toolkit was created for research purposes, 
+use it at your own peril and risk. The author of this toolkit 
+is not responsible for your actions.
+```
+
 **Donate me if you like it:**
 ```
 bitcoin -> bc1qqkr72aemz59aawxf74gytrwuw4m9mj20t7e7df
