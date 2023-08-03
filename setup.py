@@ -15,7 +15,7 @@ setup(
         'aiofiles==0.4.0',
         'pymongo==3.8.0',
         'motor==2.0.0',
-        'loguru==0.2.5',
+        'loguru==0.5.3',
     ],
     packages=find_packages(),
     entry_points={
